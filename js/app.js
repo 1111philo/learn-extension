@@ -333,14 +333,22 @@ function showActivityFeedback(course, p) {
       <h2>Activity Feedback</h2>
       <p>Describe what's wrong or ask a question. The activity will be regenerated to address your feedback while keeping the same learning goal.</p>
       <label for="feedback-input" class="sr-only">Your feedback</label>
-      <textarea id="feedback-input" rows="3" class="feedback-textarea" placeholder="e.g. I'm on a phone and can't use DevTools"></textarea>
+      <textarea id="feedback-input" rows="3" class="feedback-textarea" placeholder="e.g. I'm on a phone and can't use DevTools (⌘/Ctrl+Enter to submit)"></textarea>
       <div class="action-bar">
         <button id="cancel-feedback-btn" class="secondary-btn">Cancel</button>
         <button id="submit-feedback-btn" class="primary-btn">Regenerate</button>
       </div>
     </div>`;
 
-  $('#feedback-input').focus();
+  const feedbackInput = $('#feedback-input');
+  feedbackInput.focus();
+  feedbackInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      regenerateCurrentActivity(course, p);
+    }
+    if (e.key === 'Escape') render();
+  });
   $('#cancel-feedback-btn').addEventListener('click', () => render());
   $('#submit-feedback-btn').addEventListener('click', () => regenerateCurrentActivity(course, p));
 }
@@ -401,6 +409,9 @@ function confirmResetCourse(course, progress) {
     </div>`;
 
   $('#cancel-reset-btn').focus();
+  document.addEventListener('keydown', function handler(e) {
+    if (e.key === 'Escape') { document.removeEventListener('keydown', handler); render(); }
+  });
   $('#cancel-reset-btn').addEventListener('click', () => render());
   $('#confirm-reset-btn').addEventListener('click', async () => {
     await chrome.storage.local.remove(`progress-${progress.courseId}`);
@@ -644,7 +655,7 @@ async function renderSettings() {
     if (!keyInput.value && await getApiKey()) keyInput.value = '••••••••';
   });
 
-  $('#save-key-btn').addEventListener('click', async () => {
+  const saveKey = async () => {
     const key = keyInput.value.trim();
     if (!key || key === '••••••••') {
       showKeyFeedback('Please enter an API key.', 'error');
@@ -653,10 +664,22 @@ async function renderSettings() {
     await saveApiKey(key);
     keyInput.value = '••••••••';
     showKeyFeedback('Saved!', 'success');
+  };
+
+  $('#save-key-btn').addEventListener('click', saveKey);
+  keyInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); saveKey(); }
   });
 
-  // Personalization
-  $('#prefs-form').addEventListener('submit', async (e) => {
+  // Personalization — Cmd/Ctrl+Enter submits from textarea
+  const prefsForm = $('#prefs-form');
+  prefsForm.querySelector('textarea').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      prefsForm.requestSubmit();
+    }
+  });
+  prefsForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     const fd = new FormData(e.target);
     state.preferences = { name: fd.get('name') };
@@ -692,6 +715,9 @@ async function renderSettings() {
       </div>`;
 
     $('#cancel-delete-btn').focus();
+    document.addEventListener('keydown', function handler(e) {
+      if (e.key === 'Escape') { document.removeEventListener('keydown', handler); renderSettings(); }
+    });
     $('#cancel-delete-btn').addEventListener('click', () => renderSettings());
     $('#confirm-delete-btn').addEventListener('click', async () => {
       await chrome.storage.local.clear();

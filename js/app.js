@@ -108,7 +108,8 @@ async function startOrResumeCourse(courseId) {
   let progress = await getCourseProgress(courseId);
 
   if (!progress) {
-    const activities = generateActivities(course, state.preferences);
+    const priorWork = await getWorkProducts();
+    const activities = generateActivities(course, state.preferences, priorWork);
     progress = {
       courseId,
       status: 'in_progress',
@@ -135,6 +136,8 @@ function renderCourse() {
   const p = state.progress;
   const activity = p.activities[p.currentActivityIndex];
   const draftsForActivity = p.drafts.filter((d) => d.activityId === activity.id);
+  const hasDrafts = draftsForActivity.length > 0;
+  const lastDraft = hasDrafts ? draftsForActivity[draftsForActivity.length - 1] : null;
 
   let html = `
     <div class="course-header">
@@ -144,10 +147,29 @@ function renderCourse() {
     </div>
     <div class="chat" role="log" aria-live="polite" aria-label="Activity conversation">`;
 
-  // Show activity instruction as app message
+  // Show summary of completed prior activities as context
+  for (let i = 0; i < p.currentActivityIndex; i++) {
+    const prev = p.activities[i];
+    const prevDrafts = p.drafts.filter((d) => d.activityId === prev.id);
+    if (prevDrafts.length > 0) {
+      const lastPrev = prevDrafts[prevDrafts.length - 1];
+      html += `<div class="msg msg-prior" role="note"><p><strong>${esc(prev.type)}:</strong> ${esc(lastPrev.feedback)}</p></div>`;
+    }
+  }
+
+  // Contextual bridge from prior activity feedback
+  if (p.currentActivityIndex > 0 && !hasDrafts) {
+    const prevActivity = p.activities[p.currentActivityIndex - 1];
+    const prevDrafts = p.drafts.filter((d) => d.activityId === prevActivity.id);
+    if (prevDrafts.length > 0) {
+      html += appMessage('Building on your previous work, here is your next activity.');
+    }
+  }
+
+  // Show current activity instruction
   html += appMessage(activity.instruction);
 
-  // Show prior drafts for this activity
+  // Show drafts for this activity
   for (const draft of draftsForActivity) {
     html += draftMessage(draft);
     html += appMessage(draft.feedback);
@@ -162,10 +184,15 @@ function renderCourse() {
 
   // Action bar
   if (p.status !== 'completed') {
-    html += `
-      <div class="action-bar">
-        <button id="record-draft-btn" class="primary-btn">Record Draft</button>
-      </div>`;
+    const canAdvance = hasDrafts && activity.type !== 'final' &&
+      p.currentActivityIndex < p.activities.length - 1;
+
+    html += '<div class="action-bar">';
+    if (canAdvance) {
+      html += '<button id="next-activity-btn" class="secondary-btn">Next Activity</button>';
+    }
+    html += `<button id="record-draft-btn" class="primary-btn">${hasDrafts ? 'Revise Draft' : 'Record Draft'}</button>`;
+    html += '</div>';
   }
 
   main.innerHTML = html;
@@ -175,6 +202,15 @@ function renderCourse() {
   const recordBtn = $('#record-draft-btn');
   if (recordBtn) {
     recordBtn.addEventListener('click', () => recordDraft(activity));
+  }
+
+  const nextBtn = $('#next-activity-btn');
+  if (nextBtn) {
+    nextBtn.addEventListener('click', async () => {
+      p.currentActivityIndex++;
+      await saveCourseProgress(p.courseId, p);
+      render();
+    });
   }
 }
 
@@ -275,12 +311,8 @@ function showAssessmentUI(activity, screenshotKey, pageUrl, screenshotDataUrl) {
         });
       }
       // If not passed, stay on same activity for revision
-    } else {
-      // Non-final: advance to next activity
-      if (p.currentActivityIndex < p.activities.length - 1) {
-        p.currentActivityIndex++;
-      }
     }
+    // Non-final activities: stay on current activity so user can revise or choose to advance
 
     await saveCourseProgress(p.courseId, p);
     state.allProgress[p.courseId] = p;

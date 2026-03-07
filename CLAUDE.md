@@ -7,7 +7,7 @@
 - All source is vanilla JS (ES modules), CSS, and HTML — no build step, no frameworks.
 - Course definitions live in `data/courses.json`.
 - The app entry point is `sidepanel.html`, which loads `js/app.js` as a module.
-- Storage is abstracted in `js/storage.js` (metadata) and `js/blob-store.js` (IndexedDB for screenshots).
+- Storage is abstracted in `js/storage.js` (chrome.storage.local for metadata, IndexedDB for screenshots).
 
 ## Rules for every change
 1. Update README.md if you add, remove, or rename any user-facing feature, file, permission, or install step.

@@ -662,10 +662,10 @@ async function renderSettings() {
     <hr>
     <div class="settings-section">
       <h3>Data Management</h3>
-      <label class="toggle-label">
-        <input type="checkbox" id="dev-mode-toggle" ${devModeOn ? 'checked' : ''}>
-        Developer mode
-      </label>
+      <div class="toggle-row">
+        <label for="dev-mode-toggle">Developer mode</label>
+        <input type="checkbox" id="dev-mode-toggle" role="switch" ${devModeOn ? 'checked' : ''}>
+      </div>
       <p class="settings-hint">Logs agent requests, responses, feedback, and errors. Included in JSON export.</p>
     </div>
     <div class="settings-actions">
@@ -724,6 +724,7 @@ async function renderSettings() {
   // Developer mode toggle
   $('#dev-mode-toggle').addEventListener('change', async (e) => {
     await saveDevMode(e.target.checked);
+    announce(e.target.checked ? 'Developer mode on' : 'Developer mode off');
   });
 
   // Export

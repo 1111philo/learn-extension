@@ -269,6 +269,18 @@ async function renderCourse() {
     </div>`;
   }
 
+  // Feedback / regenerate (only if no drafts yet for this activity)
+  if (!hasDrafts && p.status !== 'completed') {
+    html += `<div class="activity-feedback-bar">
+      <button id="feedback-toggle-btn" class="feedback-toggle-btn">Have a question or issue with this activity?</button>
+      <div id="feedback-form" class="feedback-form" hidden>
+        <label for="feedback-input" class="sr-only">Your feedback</label>
+        <textarea id="feedback-input" rows="2" placeholder="e.g. I don't have access to DevTools, can you suggest an alternative?"></textarea>
+        <button id="feedback-submit-btn" class="primary-btn">Regenerate Activity</button>
+      </div>
+    </div>`;
+  }
+
   // Show drafts + feedback for this activity
   for (const draft of draftsForActivity) {
     html += draftMessage(draft);
@@ -310,6 +322,21 @@ async function renderCourse() {
   $('#back-btn').addEventListener('click', () => navigate('courses'));
   $('#reset-course-btn').addEventListener('click', () => confirmResetCourse(course, p));
 
+  const feedbackToggle = $('#feedback-toggle-btn');
+  if (feedbackToggle) {
+    feedbackToggle.addEventListener('click', () => {
+      const form = $('#feedback-form');
+      const isHidden = form.hidden;
+      form.hidden = !isHidden;
+      if (!form.hidden) $('#feedback-input').focus();
+    });
+  }
+
+  const feedbackSubmit = $('#feedback-submit-btn');
+  if (feedbackSubmit) {
+    feedbackSubmit.addEventListener('click', () => regenerateCurrentActivity(course, p));
+  }
+
   const recordBtn = $('#record-draft-btn');
   if (recordBtn) {
     recordBtn.addEventListener('click', () => recordDraft(activity));
@@ -322,6 +349,48 @@ async function renderCourse() {
       await saveCourseProgress(p.courseId, p);
       render();
     });
+  }
+}
+
+async function regenerateCurrentActivity(course, p) {
+  const feedbackText = $('#feedback-input')?.value?.trim();
+  if (!feedbackText) return;
+
+  const main = $main();
+  main.innerHTML = `
+    <div class="loading-container" role="status" aria-live="polite">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <p>Regenerating activity based on your feedback...</p>
+    </div>`;
+
+  try {
+    const planActivities = p.learningPlan.activities;
+    const currentSlot = planActivities[p.currentActivityIndex];
+    const activity = p.activities[p.currentActivityIndex];
+    const profileSummary = await getLearnerProfileSummary();
+    const progressSummary = p.activities
+      .slice(0, p.currentActivityIndex)
+      .map(a => {
+        const drafts = p.drafts.filter(d => d.activityId === a.id);
+        const last = drafts[drafts.length - 1];
+        return { type: a.type, score: last?.score, keyFeedback: last?.feedback?.slice(0, 100) };
+      });
+
+    const generated = await orchestrator.regenerateActivity(
+      course, currentSlot, progressSummary, profileSummary,
+      activity.instruction, feedbackText
+    );
+
+    p.activities[p.currentActivityIndex] = {
+      ...currentSlot,
+      instruction: generated.instruction,
+      tips: generated.tips
+    };
+
+    await saveCourseProgress(p.courseId, p);
+    render();
+  } catch (e) {
+    handleApiError(e);
   }
 }
 

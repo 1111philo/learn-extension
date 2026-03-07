@@ -97,6 +97,35 @@ export async function generateNextActivity(course, planSlot, progressSummary, pr
 }
 
 /**
+ * Regenerate an activity based on learner feedback.
+ */
+export async function regenerateActivity(course, planSlot, progressSummary, profileSummary, previousInstruction, learnerFeedback) {
+  const apiKey = await requireKey();
+  const systemPrompt = await loadPrompt('activity-creation');
+
+  const userContent = JSON.stringify({
+    course: { name: course.name, learningObjectives: course.learningObjectives },
+    activity: { type: planSlot.type, goal: planSlot.goal },
+    priorActivities: progressSummary,
+    learnerProfile: profileSummary || 'No profile yet'
+  });
+
+  const { content } = await callClaude({
+    apiKey,
+    model: MODEL_LIGHT,
+    systemPrompt,
+    messages: [
+      { role: 'user', content: userContent },
+      { role: 'assistant', content: JSON.stringify({ instruction: previousInstruction }) },
+      { role: 'user', content: `The learner has feedback about this activity: "${learnerFeedback}"\n\nGenerate a new version of this activity that addresses their feedback. You MUST keep the same learning goal: "${planSlot.goal}". The activity must still align with the course learning objectives.` }
+    ],
+    maxTokens: 1024
+  });
+
+  return parseJSON(content);
+}
+
+/**
  * Assess a draft submission with vision.
  */
 export async function assessDraft(course, activity, screenshotDataUrl, pageUrl, priorDrafts, profileSummary) {

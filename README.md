@@ -1,4 +1,6 @@
-# 1111
+<p align="center">
+  <img src="assets/logo.svg" alt="1111" width="80" height="80">
+</p>
 
 An agentic learning app that runs entirely in the Chrome side panel. Built by [11:11 Philosopher's Group](https://github.com/1111philo).
 

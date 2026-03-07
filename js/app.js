@@ -531,7 +531,8 @@ async function renderSettings() {
     </div>
 
     <hr>
-    <button id="export-btn" class="export-btn">&#8615; Export all data as JSON</button>`;
+    <button id="export-btn" class="export-btn">&#8615; Export all data as JSON</button>
+    <button id="delete-all-btn" class="danger-btn-full">&#10005; Delete all data</button>`;
 
   // API key handlers
   $('#save-key-btn').addEventListener('click', async () => {
@@ -592,6 +593,39 @@ async function renderSettings() {
     a.click();
     URL.revokeObjectURL(url);
     announce('Data exported.');
+  });
+
+  // Delete all data
+  $('#delete-all-btn').addEventListener('click', () => {
+    const main = $main();
+    main.innerHTML = `
+      <div class="confirm-container" role="alertdialog" aria-label="Confirm delete all data">
+        <h2>Delete all data?</h2>
+        <p>This will permanently erase all courses progress, drafts, screenshots, preferences, learner profile, and API key. This cannot be undone.</p>
+        <div class="action-bar">
+          <button id="cancel-delete-btn" class="secondary-btn">Cancel</button>
+          <button id="confirm-delete-btn" class="danger-btn">Delete Everything</button>
+        </div>
+      </div>`;
+
+    $('#cancel-delete-btn').addEventListener('click', () => renderSettings());
+    $('#confirm-delete-btn').addEventListener('click', async () => {
+      await chrome.storage.local.clear();
+      // Clear IndexedDB
+      try {
+        const dbs = await indexedDB.databases();
+        for (const db of dbs) {
+          if (db.name) indexedDB.deleteDatabase(db.name);
+        }
+      } catch { /* indexedDB.databases() not supported in all contexts */ }
+      state.preferences = { name: '' };
+      state.allProgress = {};
+      state.progress = null;
+      state.activeCourseId = null;
+      state.view = 'settings';
+      announce('All data deleted.');
+      render();
+    });
   });
 }
 

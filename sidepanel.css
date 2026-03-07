@@ -466,11 +466,28 @@ hr {
   cursor: pointer;
 }
 
-.danger-btn:hover { opacity: 0.9; }
+.danger-btn:hover, .danger-btn-full:hover { opacity: 0.9; }
 
-.danger-btn:focus-visible {
+.danger-btn:focus-visible, .danger-btn-full:focus-visible {
   outline: 2px solid var(--color-accent);
   outline-offset: 2px;
+}
+
+.danger-btn-full {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: var(--radius);
+  background: #dc2626;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
 }
 
 /* -- Loading ---------------------------------------------------------------- */

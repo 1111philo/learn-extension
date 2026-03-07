@@ -837,16 +837,16 @@ function instructionMessage(text) {
   }
 
   let html = '<div class="msg msg-app instruction-card">';
-  if (intro) html += `<p class="instruction-intro">${esc(intro)}</p>`;
+  if (intro) html += `<p class="instruction-intro">${linkify(esc(intro))}</p>`;
   if (steps.length > 0) {
     html += '<ol class="instruction-steps">';
     for (const step of steps) {
-      html += `<li>${esc(step)}</li>`;
+      html += `<li>${linkify(esc(step))}</li>`;
     }
     html += '</ol>';
   }
   if (!intro && steps.length === 0) {
-    html += `<p>${esc(text)}</p>`;
+    html += `<p>${linkify(esc(text))}</p>`;
   }
   html += '</div>';
   return html;
@@ -897,6 +897,14 @@ function esc(s) {
   const el = document.createElement('span');
   el.textContent = s;
   return el.innerHTML;
+}
+
+/** Convert URLs in already-escaped text into clickable links. */
+function linkify(escaped) {
+  return escaped.replace(
+    /https?:\/\/[^\s&lt;&amp;)"\]]+/g,
+    url => `<a href="${url}" target="_blank" rel="noopener">${url}</a>`
+  );
 }
 
 function announce(msg) {

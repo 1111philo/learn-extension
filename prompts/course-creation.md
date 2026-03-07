@@ -20,7 +20,7 @@ Rules:
 - If the learner has completed related courses, reference that experience.
 - Keep activity goals to one short sentence describing one specific action.
 - Include a brief rationale explaining your plan design.
-- Include a description of the final work product.
+- finalWorkProductDescription must be a short name (2-4 words) for the deliverable, like "Accessibility Audit Report", "WordPress Portfolio", or "AI Ethics Doc". NOT a full description.
 
 Respond with ONLY valid JSON, no markdown fencing:
 

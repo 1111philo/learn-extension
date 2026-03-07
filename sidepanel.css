@@ -615,9 +615,6 @@ hr {
   outline-offset: 1px;
 }
 
-.action-bar-left {
-  justify-content: flex-start;
-}
 
 .api-key-row {
   display: flex;
@@ -647,7 +644,6 @@ hr {
 
 .key-feedback-success { color: var(--color-success); }
 .key-feedback-error { color: var(--color-warning); }
-.key-feedback-info { color: var(--color-text-secondary); }
 
 .settings-actions {
   display: flex;

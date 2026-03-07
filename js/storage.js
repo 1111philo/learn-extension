@@ -56,10 +56,6 @@ export async function saveApiKey(key) {
   await chrome.storage.local.set({ apiKey: key });
 }
 
-export async function clearApiKey() {
-  await chrome.storage.local.remove('apiKey');
-}
-
 // --- Learner profile ---
 
 export async function getLearnerProfile() {

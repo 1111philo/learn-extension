@@ -6,7 +6,7 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 
 ## What it does
 
-1111 guides learners through predefined courses using four AI agents powered by the Claude API. Each course produces one final work product. All data stays on the user's device.
+1111 Learn guides learners through predefined courses using four AI agents powered by the Claude API. Each course produces one final work product. All data stays on the user's device.
 
 ### Key features
 
@@ -14,12 +14,16 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 - **Course catalog** with prerequisite checking
 - **Personalized activity generation** adapted to the learner's profile and prior work
 - **AI assessment with vision** -- the Assessment Agent analyzes screenshots of your work and provides structured feedback with strengths, improvements, score, and a recommendation
-- **Learner profile** -- tracks your strengths, weaknesses, and learning patterns across courses
+- **Output validation** -- deterministic validators check every agent response for safety, format compliance, and activity constraints (browser-only, single page, etc.) before showing it to the learner
+- **Learner profile** -- tracks your strengths, weaknesses, preferences, and learning patterns across courses; updated after assessments and feedback
+- **Activity feedback** -- submit feedback on any activity to regenerate it while keeping the same learning goal
 - **Draft recording** -- captures a screenshot of the active tab, the page URL, and AI-generated feedback
 - **Iterative feedback** -- each activity builds on prior drafts and feedback
 - **Final assessment** -- the final work product must meet a minimum passing threshold
 - **Work section** -- completed work products are saved as links for easy reference
-- **JSON export** -- export all saved data (metadata + screenshots) at any time
+- **Developer mode** -- toggle in Settings to log all agent requests, responses, feedback, and errors; included in JSON export
+- **JSON export** -- export all saved data (metadata + screenshots + dev logs) at any time
+- **Keyboard shortcuts** -- Enter submits inputs, Cmd/Ctrl+Enter submits textareas, Escape dismisses dialogs
 - **Fully local** -- screenshots are stored in IndexedDB; metadata in `chrome.storage.local`. Only API calls to Anthropic are made (with the user's own key).
 - **Accessible** -- keyboard-operable, screen-reader-friendly, respects `prefers-reduced-motion` and `forced-colors`
 - **Lightweight** -- vanilla JS, no frameworks, no build step; designed for Chromebooks and Android tablets
@@ -45,7 +49,7 @@ js/
   storage.js             chrome.storage.local + IndexedDB abstraction
   courses.js             Course loading and prerequisite checking
   api.js                 Anthropic API client
-  orchestrator.js        Agent orchestration
+  orchestrator.js        Agent orchestration + output validation
 prompts/
   course-creation.md     System prompt for Course Creation Agent
   activity-creation.md   System prompt for Activity Creation Agent
@@ -53,6 +57,10 @@ prompts/
   learner-profile-update.md  System prompt for Learner Profile Agent
 data/
   courses.json           Predefined course definitions
+assets/
+  icon.png               Source icon
+  icon-{16,32,48,128}.png  Resized icons for Chrome
+  logo.svg               Logo for README
 ```
 
 ## Agent architecture
@@ -62,9 +70,9 @@ data/
 | Course Creation | `claude-haiku-4-5` | Generates a personalized learning plan from course objectives |
 | Activity Creation | `claude-haiku-4-5` | Fills in detailed instructions for one activity at a time |
 | Activity Assessment | `claude-sonnet-4-6` | Evaluates screenshots with vision + provides structured feedback |
-| Learner Profile | `claude-haiku-4-5` | Incrementally updates learner profile after each assessment |
+| Learner Profile | `claude-haiku-4-5` | Incrementally updates learner profile after assessments and feedback |
 
-Agent prompts are stored as markdown files in `prompts/` and can be edited without changing code.
+Agent prompts are stored as markdown files in `prompts/` and can be edited without changing code. All activity and assessment outputs are validated before reaching the user.
 
 ## Course JSON structure
 

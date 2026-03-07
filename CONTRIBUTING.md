@@ -1,4 +1,4 @@
-# Contributing to 1111
+# Contributing to 1111 Learn
 
 Thank you for your interest in contributing. This project is maintained by [11:11 Philosopher's Group](https://github.com/1111philo).
 
@@ -15,6 +15,7 @@ Thank you for your interest in contributing. This project is maintained by [11:1
 - All source is vanilla JS (ES modules), CSS, and HTML.
 - Course definitions live in `data/courses.json`.
 - Agent system prompts live in `prompts/*.md` -- edit these to change agent behavior without touching code.
+- Enable **Developer mode** in Settings > Data Management to log all agent interactions. Export the JSON to inspect agent requests, responses, and errors.
 
 ## Architecture
 
@@ -23,9 +24,21 @@ The app uses four AI agents orchestrated through `js/orchestrator.js`:
 1. **Course Creation Agent** -- generates a learning plan skeleton
 2. **Activity Creation Agent** -- generates detailed instructions per activity
 3. **Activity Assessment Agent** -- evaluates screenshots with vision
-4. **Learner Profile Agent** -- tracks learner progress and patterns
+4. **Learner Profile Agent** -- tracks learner progress, patterns, and preferences
+
+All activity and assessment outputs pass through deterministic validators before reaching the user. Validators check for format compliance, safety, and activity constraints (browser-only, single page, ends with "Record").
 
 See `js/api.js` for the API client and model constants.
+
+## Activity constraints
+
+Activities must:
+- Happen entirely in the browser tab (the screenshot only captures the active tab)
+- Lead to exactly one visible result on one page
+- End with "Hit Record to capture your screen."
+- Not reference desktop apps, terminals, or file system operations
+- Not use platform-specific keyboard shortcuts
+- Take 5 minutes or less
 
 ## Guidelines
 

@@ -531,7 +531,7 @@ async function renderSettings() {
     </div>
 
     <hr>
-    <button id="export-btn" class="secondary-btn">Export all data as JSON</button>`;
+    <button id="export-btn" class="export-btn">&#8615; Export all data as JSON</button>`;
 
   // API key handlers
   $('#save-key-btn').addEventListener('click', async () => {

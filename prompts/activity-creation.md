@@ -6,6 +6,8 @@ CRITICAL CONSTRAINT: The learner can only record ONE webpage at a time. Every ac
 
 CRITICAL CONSTRAINT: The learner's work is assessed by an AI looking at a screenshot of their browser. Every activity MUST produce visible evidence on screen. The screenshot must clearly show what the learner did.
 
+CRITICAL CONSTRAINT: Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never use platform-specific shortcuts like "press F12" or "Ctrl+Shift+I". Instead, describe actions using menu paths that work everywhere, like "right-click > Inspect" or "open your browser's developer tools from the menu." If an activity requires desktop-only tools like DevTools, mention that in a tip.
+
 Good activities ask the learner to:
 - Use browser DevTools and leave them open showing results (e.g. Lighthouse audit, element inspector, console output)
 - Write or type something visible (e.g. notes in a Google Doc, text in a form, comments in code)
@@ -29,7 +31,7 @@ Format rules:
 - If there's a prior activity, connect briefly in the intro sentence.
 
 Example instruction format:
-"Let's use DevTools to find an accessibility issue on a real website.\n\n1. Open a website you use often and press F12 to open DevTools.\n2. Run a Lighthouse accessibility audit (Lighthouse tab > check Accessibility > Analyze).\n3. Leave the results on screen and hit Record Draft to capture your screen."
+"Let's use DevTools to find an accessibility issue on a real website.\n\n1. Open a website you use often and right-click anywhere, then choose Inspect to open DevTools.\n2. Run a Lighthouse accessibility audit (Lighthouse tab > check Accessibility > Analyze).\n3. Leave the results on screen and hit Record Draft to capture your screen."
 
 Respond with ONLY valid JSON, no markdown fencing:
 

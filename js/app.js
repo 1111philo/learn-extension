@@ -446,22 +446,27 @@ function confirmResetCourse(course, progress) {
 async function recordDraft(activity) {
   const main = $main();
 
-  // Capture screenshot + URL from active tab
+  // Capture screenshot + URL from active tab (via background service worker)
   let dataUrl = null;
   let pageUrl = '';
   try {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
     pageUrl = tab ? tab.url : '';
-    dataUrl = await chrome.tabs.captureVisibleTab(null, { format: 'png' });
+    const resp = await chrome.runtime.sendMessage({ type: 'captureScreenshot' });
+    if (resp?.error) throw new Error(resp.error);
+    dataUrl = resp?.dataUrl || null;
   } catch (e) {
     console.warn('Screenshot capture failed:', e);
   }
 
+  if (!dataUrl) {
+    showError('Could not capture a screenshot. Make sure a webpage is open in the active tab and try again.');
+    return;
+  }
+
   // Save screenshot to IndexedDB
   const screenshotKey = `draft-${Date.now()}`;
-  if (dataUrl) {
-    await saveScreenshot(screenshotKey, dataUrl);
-  }
+  await saveScreenshot(screenshotKey, dataUrl);
 
   // Show loading state for AI assessment
   main.innerHTML = `

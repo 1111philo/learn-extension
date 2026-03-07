@@ -4,45 +4,65 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 
 ## What it does
 
-1111 guides learners through predefined courses via a chat-like interface. Each course produces one final work product. All data stays on the user's device.
+1111 guides learners through predefined courses using four AI agents powered by the Claude API. Each course produces one final work product. All data stays on the user's device.
 
 ### Key features
 
+- **AI-powered learning** -- four Claude agents create personalized plans, generate activities, assess work via screenshots, and track learner progress
 - **Course catalog** with prerequisite checking
-- **Activity generation** from course learning objectives, adapted to the learner's experience level
-- **Draft recording** — captures a screenshot of the active tab, the page URL, and structured self-assessment feedback, stored together as a single draft record
-- **Iterative feedback** — each activity builds on prior drafts and feedback so the learner progresses toward a stronger result
-- **Final assessment** — the final work product must meet a minimum passing threshold before the course is marked complete
-- **Work section** — completed work products are saved as links for easy reference
-- **JSON export** — export all saved data (metadata + screenshots) at any time
-- **Fully local** — screenshots are stored in IndexedDB; metadata (progress, preferences, draft references, URLs, timestamps, feedback) in `chrome.storage.local`. Nothing is sent to a remote server.
-- **Accessible** — keyboard-operable, screen-reader-friendly, respects `prefers-reduced-motion` and `forced-colors`
-- **Lightweight** — vanilla JS, no frameworks, no build step; designed for Chromebooks and Android tablets
+- **Personalized activity generation** adapted to the learner's profile and prior work
+- **AI assessment with vision** -- the Assessment Agent analyzes screenshots of your work and provides structured feedback with strengths, improvements, score, and a recommendation
+- **Learner profile** -- tracks your strengths, weaknesses, and learning patterns across courses
+- **Draft recording** -- captures a screenshot of the active tab, the page URL, and AI-generated feedback
+- **Iterative feedback** -- each activity builds on prior drafts and feedback
+- **Final assessment** -- the final work product must meet a minimum passing threshold
+- **Work section** -- completed work products are saved as links for easy reference
+- **JSON export** -- export all saved data (metadata + screenshots) at any time
+- **Fully local** -- screenshots are stored in IndexedDB; metadata in `chrome.storage.local`. Only API calls to Anthropic are made (with the user's own key).
+- **Accessible** -- keyboard-operable, screen-reader-friendly, respects `prefers-reduced-motion` and `forced-colors`
+- **Lightweight** -- vanilla JS, no frameworks, no build step; designed for Chromebooks and Android tablets
 
 ## Install (developer mode)
 
 1. Clone this repository.
 2. Open `chrome://extensions` in Chrome.
 3. Enable **Developer mode**.
-4. Click **Load unpacked** and select the `learn-extension` folder.
+4. Click **Load unpacked** and select the project folder.
 5. Click the 1111 extension icon to open the side panel.
+6. Go to **Settings** and enter your Anthropic API key.
 
 ## File structure
 
 ```
-learn-extension/
-  manifest.json          Chrome extension manifest (Manifest V3)
-  background.js          Opens the side panel on icon click
-  sidepanel.html         Main UI entry point
-  sidepanel.css          Styles
-  js/
-    app.js               App shell, routing, views, event handling
-    storage.js           chrome.storage.local + IndexedDB abstraction
-    courses.js           Course loading and activity generation
-    assessment.js        Draft assessment and feedback
-  data/
-    courses.json         Predefined course definitions
+manifest.json            Chrome extension manifest (Manifest V3)
+background.js            Opens the side panel on icon click
+sidepanel.html           Main UI entry point
+sidepanel.css            Styles
+js/
+  app.js                 App shell, routing, views, event handling
+  storage.js             chrome.storage.local + IndexedDB abstraction
+  courses.js             Course loading and prerequisite checking
+  api.js                 Anthropic API client
+  orchestrator.js        Agent orchestration
+prompts/
+  course-creation.md     System prompt for Course Creation Agent
+  activity-creation.md   System prompt for Activity Creation Agent
+  activity-assessment.md System prompt for Activity Assessment Agent
+  learner-profile-update.md  System prompt for Learner Profile Agent
+data/
+  courses.json           Predefined course definitions
 ```
+
+## Agent architecture
+
+| Agent | Model | Purpose |
+|-------|-------|---------|
+| Course Creation | `claude-haiku-4-5` | Generates a personalized learning plan from course objectives |
+| Activity Creation | `claude-haiku-4-5` | Fills in detailed instructions for one activity at a time |
+| Activity Assessment | `claude-sonnet-4-6` | Evaluates screenshots with vision + provides structured feedback |
+| Learner Profile | `claude-haiku-4-5` | Incrementally updates learner profile after each assessment |
+
+Agent prompts are stored as markdown files in `prompts/` and can be edited without changing code.
 
 ## Course JSON structure
 
@@ -66,6 +86,12 @@ Each course in `data/courses.json` has:
 | `unlimitedStorage`| Allow large screenshot storage in IndexedDB      |
 | `activeTab`       | Capture screenshots and read the active tab URL  |
 | `tabs`            | Query tab information for draft recording        |
+
+### Host permissions
+
+| Host                        | Why                                    |
+|-----------------------------|----------------------------------------|
+| `https://api.anthropic.com/*` | Send requests to the Claude API with the user's own key |
 
 ## License
 

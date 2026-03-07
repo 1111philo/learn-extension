@@ -6,20 +6,34 @@ Thank you for your interest in contributing. This project is maintained by [11:1
 
 1. Fork and clone the repository.
 2. Load the extension in Chrome using developer mode (see README.md).
-3. Make your changes and test them in the side panel.
+3. Go to Settings and enter your Anthropic API key.
+4. Make your changes and test them in the side panel.
 
 ## Development workflow
 
 - There is no build step. Edit the source files directly and reload the extension in `chrome://extensions`.
 - All source is vanilla JS (ES modules), CSS, and HTML.
 - Course definitions live in `data/courses.json`.
+- Agent system prompts live in `prompts/*.md` -- edit these to change agent behavior without touching code.
+
+## Architecture
+
+The app uses four AI agents orchestrated through `js/orchestrator.js`:
+
+1. **Course Creation Agent** -- generates a learning plan skeleton
+2. **Activity Creation Agent** -- generates detailed instructions per activity
+3. **Activity Assessment Agent** -- evaluates screenshots with vision
+4. **Learner Profile Agent** -- tracks learner progress and patterns
+
+See `js/api.js` for the API client and model constants.
 
 ## Guidelines
 
 - **Accessibility is required.** Every interactive element must be keyboard-operable and have an accessible name. Test with a screen reader when adding UI.
 - **Keep it lightweight.** No frameworks, no heavy dependencies. The app must perform well on Chromebooks and Android tablets.
-- **Local-first.** Do not add code that sends user data (screenshots, URLs, draft records) to a remote server unless behind an explicit, user-controlled opt-in.
+- **Local-first.** The only external calls are to the Anthropic API using the user's own key. Do not add code that sends user data elsewhere.
 - **Update documentation.** If your change adds, removes, or renames a feature, file, or permission, update README.md and CLAUDE.md accordingly.
+- **Test prompts.** When editing `prompts/*.md`, test with a real API key to verify the agent returns valid JSON.
 
 ## Submitting changes
 

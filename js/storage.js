@@ -45,6 +45,41 @@ export async function saveWorkProduct(product) {
   await chrome.storage.local.set({ work: products });
 }
 
+// --- API key ---
+
+export async function getApiKey() {
+  const result = await chrome.storage.local.get('apiKey');
+  return result.apiKey || null;
+}
+
+export async function saveApiKey(key) {
+  await chrome.storage.local.set({ apiKey: key });
+}
+
+export async function clearApiKey() {
+  await chrome.storage.local.remove('apiKey');
+}
+
+// --- Learner profile ---
+
+export async function getLearnerProfile() {
+  const result = await chrome.storage.local.get('learnerProfile');
+  return result.learnerProfile || null;
+}
+
+export async function saveLearnerProfile(profile) {
+  await chrome.storage.local.set({ learnerProfile: profile });
+}
+
+export async function getLearnerProfileSummary() {
+  const result = await chrome.storage.local.get('learnerProfileSummary');
+  return result.learnerProfileSummary || '';
+}
+
+export async function saveLearnerProfileSummary(summary) {
+  await chrome.storage.local.set({ learnerProfileSummary: summary });
+}
+
 export async function exportAllData() {
   const metadata = await chrome.storage.local.get(null);
   const blobs = await exportAllBlobs();

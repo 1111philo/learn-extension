@@ -141,7 +141,7 @@ async function startOrResumeCourse(courseId) {
       main.innerHTML = `
         <div class="loading-container" role="status" aria-live="polite">
           <div class="loading-spinner" aria-hidden="true"></div>
-          <p>Creating your personalized learning plan...</p>
+          <p>Setting up your course...</p>
           <p class="loading-substep" aria-label="Step ${step} of ${totalSteps}: ${label}">Step ${step} of ${totalSteps}: ${label}</p>
         </div>`;
     }

@@ -85,12 +85,11 @@ function stopTimer() {
 
 /**
  * Track a telemetry event. Fire-and-forget.
- * @param {string} type - Event type (e.g. 'agent_response')
- * @param {object} data - Metadata only, no PII or content
+ * Sends full agent I/O (prompts, responses, feedback) — screenshots
+ * and API keys are stripped to keep payload size reasonable and safe.
  */
 export function trackEvent(type, data = {}) {
-  // Sanitize: strip any content fields that might leak PII
-  const clean = sanitize(data);
+  const clean = stripBinaries(data);
   buffer.push({
     type,
     timestamp: new Date().toISOString(),
@@ -102,19 +101,15 @@ export function trackEvent(type, data = {}) {
   if (buffer.length >= FLUSH_THRESHOLD) flush();
 }
 
-/** Strip content values, keep only structural metadata. */
-function sanitize(data) {
-  const blocked = new Set([
-    'feedback', 'response', 'instruction', 'tips', 'content',
-    'strengths', 'improvements', 'learnerProfile', 'profileSummary',
-    'previousInstruction', 'previousTips', 'learnerFeedback',
-    'screenshotDataUrl', 'dataUrl', 'apiKey', 'name',
-  ]);
+/** Strip only binary blobs and secrets — keep all text content. */
+function stripBinaries(data) {
+  const blocked = new Set(['screenshotDataUrl', 'dataUrl', 'apiKey']);
   const out = {};
   for (const [k, v] of Object.entries(data)) {
     if (blocked.has(k)) continue;
+    if (typeof v === 'string' && v.startsWith('data:image/')) continue;
     if (typeof v === 'object' && v !== null && !Array.isArray(v)) {
-      out[k] = sanitize(v);
+      out[k] = stripBinaries(v);
     } else {
       out[k] = v;
     }

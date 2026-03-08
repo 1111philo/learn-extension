@@ -22,7 +22,7 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 - **Final assessment** -- the final work product must meet a minimum passing threshold
 - **Portfolio** -- work cards show progress bars and recording counts; tap into a Build Detail view with full draft timeline and on-demand screenshots
 - **Build narrative** -- activity type labels (Research, Practice, Draft, Deliver) and a completion summary card celebrate your process
-- **Developer mode** -- toggle in Settings to log all agent requests, responses, feedback, and errors; included in JSON export. When enabled, anonymous usage telemetry is sent to help improve the extension (no PII, prompt content, or screenshots)
+- **Developer mode** -- toggle in Settings to log all agent requests, responses, feedback, and errors; included in JSON export. When enabled, usage telemetry including agent prompts and responses is sent to help improve the extension (no screenshots or API keys)
 - **JSON export** -- export all saved data (metadata + screenshots + dev logs) at any time
 - **Keyboard shortcuts** -- Enter submits inputs, Cmd/Ctrl+Enter submits textareas, Escape dismisses dialogs
 - **Fully local** -- screenshots are stored in IndexedDB; metadata in `chrome.storage.local`. Only API calls to Anthropic are made (with the user's own key).

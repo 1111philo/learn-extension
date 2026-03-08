@@ -1135,7 +1135,7 @@ async function renderSettings() {
       main.innerHTML = `
         <div class="confirm-container" role="alertdialog" aria-label="Developer mode consent">
           <h2>Enable Developer Mode?</h2>
-          <p>This will log agent interactions locally and send <strong>anonymous, metadata-only</strong> usage data to help improve the extension. No personal info, prompt content, or screenshots are ever sent.</p>
+          <p>This will log agent interactions locally and send <strong>anonymous usage data</strong> to help improve the extension — including agent prompts, responses, and feedback. No screenshots, API keys, or account info are ever sent.</p>
           <p class="settings-hint">You can disable this at any time.</p>
           <div class="action-bar">
             <button id="cancel-devmode-btn" class="secondary-btn">Cancel</button>

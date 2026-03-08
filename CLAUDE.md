@@ -19,7 +19,7 @@ All activity and assessment outputs pass through deterministic validators in `js
 The profile updates after both assessments and learner feedback. A code-level `mergeProfile()` in `app.js` unions array fields and merges preferences so agent responses can never accidentally lose accumulated data.
 
 ### Telemetry
-When dev mode is enabled, `js/telemetry.js` buffers anonymous usage events and sends them to `learn-service` (separate repo). Events are metadata-only -- no PII, prompt content, or screenshots. A consent notice is shown when enabling dev mode. The telemetry client is fire-and-forget and never blocks the UI. Service credentials are stored in `chrome.storage.local` under `serviceCredentials`.
+When dev mode is enabled, `js/telemetry.js` buffers usage events and sends them to `learn-service` (separate repo). Events include full agent I/O (prompts, responses, feedback) for debugging and improvement. Screenshots and API keys are never sent. A consent notice is shown when enabling dev mode. The telemetry client is fire-and-forget and never blocks the UI. Service credentials are stored in `chrome.storage.local` under `serviceCredentials`.
 
 ## Key conventions
 - All source is vanilla JS (ES modules), CSS, and HTML -- no build step, no frameworks.

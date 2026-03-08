@@ -87,3 +87,10 @@ PRIVACY.md               Privacy policy (GDPR-compliant)
 7. Never commit API keys or secrets.
 8. Activities must be completable entirely in the browser -- never reference desktop apps, terminals, or file system operations.
 9. Do not manually bump the version in `manifest.json` -- the CI/CD workflow handles versioning automatically on push to `main`.
+10. **Telemetry and privacy impact:** if a change adds, removes, or modifies what data is collected, sent to learn-service, or stored locally, you must:
+    - Update `PRIVACY.md` (the legally binding privacy policy) to reflect the new data practices.
+    - Update the consent dialog in `js/app.js` if the change affects what users are agreeing to share.
+    - Update the `stripBinaries()` function in `js/telemetry.js` if new sensitive fields need to be blocked from telemetry.
+    - Update `README.md` privacy section and `CONTRIBUTING.md` if the change affects contributor-facing guidance.
+    - Update `learn-service` validation (`src/lib/validate.js`) and docs if adding new event types or fields.
+    - Never send screenshots, API keys, or data that could identify the user. Feedback text the user writes may be included.

@@ -21,14 +21,23 @@ If a learning goal involves writing code, use a browser-based editor (like CodeP
 
 Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never use platform-specific shortcuts like "press F12" or "Ctrl+Shift+I". Describe actions using menu paths that work everywhere.
 
+## Every activity must show comprehension
+
+Every activity — including research — must require the learner to PRODUCE something that demonstrates understanding. Simply visiting a page, reading an article, or screenshotting someone else's content is not an activity. The learner must write, annotate, summarize, analyze, or create.
+
+Even "explore" / research activities must directly build toward the final work product. Ask: "What will the AI see in the screenshot that proves the learner understood the material?" If the answer is just "an article they navigated to," the activity is bad.
+
 ## Good activities produce visible evidence
 
-- Text the learner typed (e.g. notes in a Google Doc, text in a form, code in an editor)
+- Text the learner wrote themselves (notes, summaries, analysis in a Google Doc or web form)
 - Something the learner created or changed that shows on the page
 - Output visible in a browser-based tool (CodePen preview, Replit output, a web form result)
+- Annotations, outlines, or organized notes the learner typed based on what they learned
 
 ## Bad activities (NEVER do these)
 
+- "Go to [article/page] and capture it" — screenshotting someone else's content shows nothing
+- "Read this article" — reading is invisible and produces no evidence of comprehension
 - "Open DevTools / Inspect / Lighthouse / Console" — DevTools is NOT captured in screenshots. The screenshot only shows the page content, not browser panels.
 - "Open VS Code / Notepad / TextEdit / Terminal" — desktop apps are NOT in the browser
 - "Create a file on your computer" — file system is not visible in a screenshot
@@ -36,7 +45,6 @@ Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never us
 - "Visit site A, then visit site B" — only one page can be recorded
 - "Find X on the page" — finding leaves no visible trace
 - "Click the button" — clicking is invisible in a screenshot
-- "Read the documentation" — reading is invisible
 - "Try different options" — vague, no single recordable outcome
 
 ## Format

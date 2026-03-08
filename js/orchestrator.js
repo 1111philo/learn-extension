@@ -293,6 +293,72 @@ export async function assessDraft(course, activity, screenshotDataUrl, pageUrl, 
 }
 
 /**
+ * Reassess a draft with learner feedback on the assessment.
+ * Re-evaluates the same screenshot, factoring in the learner's dispute.
+ */
+export async function reassessDraft(course, activity, screenshotDataUrl, pageUrl, priorDrafts, profileSummary, previousAssessment, learnerFeedback) {
+  const apiKey = await requireKey();
+  const systemPrompt = await loadPrompt('activity-assessment');
+
+  const compressedDrafts = priorDrafts.map(d => ({
+    score: d.score,
+    feedback: d.feedback,
+    recommendation: d.recommendation
+  }));
+
+  const contentParts = [];
+
+  contentParts.push({
+    type: 'text',
+    text: JSON.stringify({
+      course: { name: course.name, learningObjectives: course.learningObjectives },
+      activity: {
+        id: activity.id,
+        type: activity.type,
+        goal: activity.goal,
+        instruction: activity.instruction
+      },
+      pageUrl,
+      priorDrafts: compressedDrafts,
+      learnerProfile: profileSummary || 'No profile yet'
+    })
+  });
+
+  if (screenshotDataUrl) {
+    const match = screenshotDataUrl.match(/^data:(image\/\w+);base64,(.+)$/);
+    if (match) {
+      contentParts.push({
+        type: 'image',
+        source: {
+          type: 'base64',
+          media_type: match[1],
+          data: match[2]
+        }
+      });
+    }
+  }
+
+  const messages = [
+    { role: 'user', content: contentParts },
+    { role: 'assistant', content: JSON.stringify(previousAssessment) },
+    { role: 'user', content: `The learner disputes this assessment: "${learnerFeedback}"\n\nRe-evaluate the same screenshot, taking their feedback into account. You may adjust your score, recommendation, and feedback if their point is valid. Respond with the same JSON format.` }
+  ];
+
+  const callAgent = async () => {
+    const { content } = await callClaude({
+      apiKey,
+      model: MODEL_HEAVY,
+      systemPrompt,
+      messages,
+      maxTokens: 1024
+    });
+    return parseJSON(content);
+  };
+
+  return callWithValidation(callAgent, validateAssessment, 'assessment-reassess');
+}
+
+/**
  * Update the learner profile after learner feedback on an activity.
  */
 export async function updateProfileFromFeedback(fullProfile, feedbackText, activityContext) {

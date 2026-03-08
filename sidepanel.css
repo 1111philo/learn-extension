@@ -768,6 +768,29 @@ hr {
 }
 
 /* ── Personal best label ───────────────────────────────────────────────── */
+/* ── Dispute button ─────────────────────────────────────────────────────── */
+.dispute-btn {
+  align-self: flex-start;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background: var(--color-bg);
+  font: inherit;
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+}
+
+.dispute-btn:hover {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.dispute-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
 .personal-best-label {
   font-size: 0.75rem;
   font-weight: 700;

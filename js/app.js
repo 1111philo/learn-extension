@@ -452,6 +452,14 @@ async function renderCourse() {
       navigate('work-detail');
     });
   }
+
+  main.querySelectorAll('.dispute-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const draftId = btn.dataset.draftId;
+      const draft = p.drafts.find(d => d.id === draftId);
+      if (draft) showDisputeForm(course, p, activity, draft);
+    });
+  });
 }
 
 function showActivityFeedback(course, p) {
@@ -552,6 +560,98 @@ function confirmResetCourse(course, progress) {
     announce(`${course.name} has been reset.`);
     render();
   });
+}
+
+function showDisputeForm(course, p, activity, draft) {
+  const main = $main();
+  main.innerHTML = `
+    <div class="confirm-container" role="dialog" aria-label="Dispute assessment">
+      <h2>Dispute Assessment</h2>
+      <p>Explain why you think this assessment is wrong. The AI will re-evaluate the same screenshot with your feedback.</p>
+      <label for="dispute-input" class="sr-only">Your feedback</label>
+      <textarea id="dispute-input" rows="3" class="feedback-textarea" placeholder="e.g. I did complete the task — the result is in the bottom right corner (⌘/Ctrl+Enter to submit)"></textarea>
+      <div class="action-bar">
+        <button id="cancel-dispute-btn" class="secondary-btn">Cancel</button>
+        <button id="submit-dispute-btn" class="primary-btn">Reassess</button>
+      </div>
+    </div>`;
+
+  const input = $('#dispute-input');
+  input.focus();
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
+      e.preventDefault();
+      submitDispute(course, p, activity, draft);
+    }
+    if (e.key === 'Escape') render();
+  });
+  $('#cancel-dispute-btn').addEventListener('click', () => render());
+  $('#submit-dispute-btn').addEventListener('click', () => submitDispute(course, p, activity, draft));
+}
+
+async function submitDispute(course, p, activity, draft) {
+  const feedbackText = $('#dispute-input')?.value?.trim();
+  if (!feedbackText) return;
+
+  logDev('dispute', { feedback: feedbackText, courseId: course.courseId, draftId: draft.id });
+
+  const main = $main();
+  main.innerHTML = `
+    <div class="loading-container" role="status" aria-live="polite">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <p>Reassessing your work...</p>
+    </div>`;
+
+  try {
+    // Load the original screenshot from IndexedDB
+    const screenshotDataUrl = await getScreenshot(draft.screenshotKey);
+    const profileSummary = await getLearnerProfileSummary();
+    const priorDrafts = p.drafts.filter(d => d.activityId === activity.id && d.id !== draft.id);
+
+    const previousAssessment = {
+      feedback: draft.feedback,
+      strengths: draft.strengths,
+      improvements: draft.improvements,
+      score: draft.score,
+      recommendation: draft.recommendation,
+      passed: draft.passed || false
+    };
+
+    const result = await orchestrator.reassessDraft(
+      course, activity, screenshotDataUrl, draft.url,
+      priorDrafts, profileSummary, previousAssessment, feedbackText
+    );
+
+    // Update the draft in place
+    draft.feedback = result.feedback;
+    draft.strengths = result.strengths;
+    draft.improvements = result.improvements;
+    draft.score = result.score;
+    draft.recommendation = result.recommendation;
+    draft.disputed = true;
+
+    // Handle completion changes
+    if (activity.type === 'final' && result.passed && p.status !== 'completed') {
+      p.status = 'completed';
+      p.completedAt = Date.now();
+      p.finalWorkProductUrl = draft.url;
+      await saveWorkProduct({
+        courseId: p.courseId,
+        courseName: course.name,
+        url: draft.url,
+        completedAt: p.completedAt
+      });
+    }
+
+    await saveCourseProgress(p.courseId, p);
+    state.allProgress[p.courseId] = p;
+    render();
+
+    // Update learner profile in background
+    updateProfileFromFeedbackInBackground(feedbackText, course, activity);
+  } catch (e) {
+    handleApiError(e);
+  }
 }
 
 async function recordDraft(activity) {
@@ -1180,6 +1280,8 @@ function feedbackCard(draft, isPersonalBest = false) {
       <ul>${draft.improvements.map(s => `<li>${esc(s)}</li>`).join('')}</ul>
     </details>`;
   }
+
+  html += `<button class="dispute-btn" data-draft-id="${esc(draft.id)}" aria-label="Dispute this assessment">Dispute</button>`;
 
   html += '</div>';
   return html;

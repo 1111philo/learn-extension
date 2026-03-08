@@ -3,7 +3,7 @@
  * Only active when dev mode is enabled. Fire-and-forget, never blocks UI.
  */
 
-const SERVICE_URL = 'https://PLACEHOLDER.execute-api.us-east-1.amazonaws.com';
+const SERVICE_URL = 'https://czrqy8ea0a.execute-api.us-east-1.amazonaws.com';
 const FLUSH_INTERVAL_MS = 60_000;
 const FLUSH_THRESHOLD = 20;
 const CREDS_KEY = 'serviceCredentials';

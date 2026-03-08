@@ -23,18 +23,24 @@ The entire course builds ONE work product in ONE persistent document. The input 
 
 Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never use platform-specific shortcuts like "press F12" or "Ctrl+Shift+I". Describe actions using menu paths that work everywhere.
 
+## Guide, don't dictate
+
+Tell the learner WHAT to learn and WHERE to put it — never tell them exactly WHAT to write. The learner decides the content. The activity should name a topic or skill to explore, then ask them to add their own findings, thoughts, or work to the document. The assessment AI will evaluate whether they demonstrated understanding.
+
+Good: "Research common WCAG color contrast requirements and add a section to your document summarizing what you learned."
+Bad: "Add a section titled 'Color Contrast' with three bullet points: 4.5:1 ratio for normal text, 3:1 for large text, and how to use a contrast checker."
+
+The first version teaches through discovery. The second is just dictation — the learner copies your words without thinking.
+
 ## Every activity must show comprehension
 
-Every activity — including research — must require the learner to PRODUCE something that demonstrates understanding. Simply visiting a page, reading an article, or screenshotting someone else's content is not an activity. The learner must write, annotate, summarize, analyze, or create.
-
-Even "explore" / research activities must directly build toward the final work product. Ask: "What will the AI see in the screenshot that proves the learner understood the material?" If the answer is just "an article they navigated to," the activity is bad.
+Every activity — including research — must require the learner to PRODUCE something in the work product that demonstrates understanding. Simply visiting a page, reading an article, or screenshotting someone else's content is not an activity.
 
 ## Good activities produce visible evidence
 
-- Text the learner wrote themselves (notes, summaries, analysis in a Google Doc or web form)
-- Something the learner created or changed that shows on the page
-- Output visible in a browser-based tool (CodePen preview, Replit output, a web form result)
-- Annotations, outlines, or organized notes the learner typed based on what they learned
+- Content the learner wrote in their own words in the work product
+- Something the learner created, revised, or restructured in the document
+- Code or output the learner produced in a browser-based tool
 
 ## Bad activities (NEVER do these)
 

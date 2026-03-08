@@ -65,6 +65,17 @@ assets/
   logo.svg               Logo for README
 ```
 
+## Releases
+
+Releases are automated via GitHub Actions. Every push to `main` triggers the release workflow:
+
+1. Commits since the last release are analyzed by Claude to determine the appropriate semver bump and generate release notes.
+2. `manifest.json` is updated with the new version.
+3. The extension is packaged into a zip (ready for Chrome Web Store upload).
+4. A GitHub Release is created with the zip attached.
+
+Maintainers must add an `ANTHROPIC_API_KEY` secret to the repository settings for the workflow to function.
+
 ## Agent architecture
 
 | Agent | Model | Purpose |

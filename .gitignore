@@ -4,3 +4,4 @@ node_modules/
 *.pem
 *.zip
 .env.js
+dist/

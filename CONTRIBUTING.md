@@ -55,6 +55,15 @@ Activities must:
 2. Make focused, well-described commits.
 3. Open a pull request with a clear summary of what changed and why.
 
+## Versioning and releases
+
+Versioning is fully automated. When a PR is merged (or a commit is pushed) to `main`, a GitHub Actions workflow:
+1. Analyzes the new commits with Claude to determine the semver bump (patch, minor, or major) and generate release notes.
+2. Updates the `version` field in `manifest.json`.
+3. Packages the extension into a zip and creates a GitHub Release.
+
+**Do not manually bump the version in `manifest.json`** -- the workflow handles this automatically.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the [GNU Affero General Public License v3.0](LICENSE).

@@ -1,0 +1,165 @@
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # full history for commit analysis
+
+      - name: Get current version and commits since last release
+        id: context
+        run: |
+          CURRENT_VERSION=$(jq -r '.version' manifest.json)
+          echo "current_version=$CURRENT_VERSION" >> "$GITHUB_OUTPUT"
+
+          # Find the last release tag, or use the initial commit
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
+          if [ -z "$LAST_TAG" ]; then
+            COMMITS=$(git log --pretty=format:"%h %s" HEAD)
+          else
+            COMMITS=$(git log --pretty=format:"%h %s" "${LAST_TAG}..HEAD")
+          fi
+
+          # Skip if no new commits since last tag
+          if [ -z "$COMMITS" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
+          # Save commits to file (handles multiline safely)
+          echo "$COMMITS" > /tmp/commits.txt
+
+      - name: Ask Claude for version and release notes
+        if: steps.context.outputs.skip != 'true'
+        id: claude
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          CURRENT_VERSION="${{ steps.context.outputs.current_version }}"
+          COMMITS=$(cat /tmp/commits.txt)
+
+          # Build the prompt
+          PROMPT=$(cat <<'PROMPT_END'
+          You are a release manager for a Chrome extension called "1111 Learn".
+
+          Current version: ${CURRENT_VERSION}
+          The extension uses semantic versioning (MAJOR.MINOR.PATCH):
+          - PATCH: bug fixes, copy changes, small tweaks
+          - MINOR: new features, significant UI changes, new agent behaviors
+          - MAJOR: breaking changes, major rewrites, architecture overhauls
+
+          Chrome Web Store requires that each new version number is strictly greater than the previous one.
+
+          Here are the commits since the last release:
+          ${COMMITS}
+
+          Respond with ONLY valid JSON (no markdown fences, no explanation) in this exact format:
+          {
+            "version": "X.Y.Z",
+            "release_notes": "## What's New\n\n- bullet point summaries of changes\n\n## Details\n\nBrief paragraph if needed."
+          }
+          PROMPT_END
+
+          # Substitute variables into prompt
+          PROMPT=$(echo "$PROMPT" | sed "s|\${CURRENT_VERSION}|${CURRENT_VERSION}|g")
+          PROMPT=$(echo "$PROMPT" | sed "s|\${COMMITS}|${COMMITS}|g")
+
+          # Call Claude API
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "content-type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -d "$(jq -n \
+              --arg prompt "$PROMPT" \
+              '{
+                model: "claude-haiku-4-5-20251001",
+                max_tokens: 1024,
+                messages: [{role: "user", content: $prompt}]
+              }')")
+
+          # Extract the text content from Claude's response
+          TEXT=$(echo "$RESPONSE" | jq -r '.content[0].text')
+
+          if [ "$TEXT" = "null" ] || [ -z "$TEXT" ]; then
+            echo "Error: Claude API returned no content"
+            echo "$RESPONSE"
+            exit 1
+          fi
+
+          # Parse version and release notes from Claude's JSON response
+          NEW_VERSION=$(echo "$TEXT" | jq -r '.version')
+          RELEASE_NOTES=$(echo "$TEXT" | jq -r '.release_notes')
+
+          if [ "$NEW_VERSION" = "null" ] || [ -z "$NEW_VERSION" ]; then
+            echo "Error: Could not parse version from Claude's response"
+            echo "$TEXT"
+            exit 1
+          fi
+
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
+          # Save release notes to file (handles multiline)
+          echo "$RELEASE_NOTES" > /tmp/release_notes.md
+
+      - name: Update manifest.json version
+        if: steps.context.outputs.skip != 'true'
+        run: |
+          NEW_VERSION="${{ steps.claude.outputs.new_version }}"
+          jq --arg v "$NEW_VERSION" '.version = $v' manifest.json > manifest.tmp && mv manifest.tmp manifest.json
+          echo "Updated manifest.json to version $NEW_VERSION"
+          cat manifest.json
+
+      - name: Build extension zip
+        if: steps.context.outputs.skip != 'true'
+        run: |
+          NEW_VERSION="${{ steps.claude.outputs.new_version }}"
+          ZIP_NAME="1111-learn-v${NEW_VERSION}.zip"
+
+          zip -r "$ZIP_NAME" . \
+            -x ".git/*" \
+            -x ".github/*" \
+            -x ".env.js" \
+            -x ".env.example.js" \
+            -x ".gitignore" \
+            -x ".DS_Store" \
+            -x "*.crx" \
+            -x "*.pem" \
+            -x "*.zip" \
+            -x "node_modules/*" \
+            -x "CLAUDE.md" \
+            -x "CONTRIBUTING.md" \
+            -x "LICENSE"
+
+          echo "zip_name=$ZIP_NAME" >> "$GITHUB_ENV"
+
+      - name: Commit version bump
+        if: steps.context.outputs.skip != 'true'
+        run: |
+          NEW_VERSION="${{ steps.claude.outputs.new_version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add manifest.json
+          git commit -m "chore: bump version to ${NEW_VERSION}" || echo "No changes to commit"
+          git push
+
+      - name: Create GitHub Release
+        if: steps.context.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          NEW_VERSION="${{ steps.claude.outputs.new_version }}"
+          gh release create "v${NEW_VERSION}" \
+            "${{ env.zip_name }}" \
+            --title "v${NEW_VERSION}" \
+            --notes-file /tmp/release_notes.md

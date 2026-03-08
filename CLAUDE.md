@@ -37,6 +37,16 @@ When dev mode is enabled, `js/telemetry.js` buffers usage events and sends them 
 - Work section shows portfolio cards with segmented progress bars; tapping opens a Build Detail view with full draft timeline and on-demand screenshot loading from IndexedDB.
 - Completion summary card shows stats (steps, recordings, days) when a course finishes.
 
+## CI/CD
+A GitHub Actions workflow (`.github/workflows/release.yml`) runs on every push to `main`:
+1. Collects commits since the last release tag
+2. Calls Claude (Haiku) to determine the semver bump and generate release notes
+3. Updates `manifest.json` version
+4. Packages the extension into a zip (excluding dev files)
+5. Commits the version bump and creates a GitHub Release with the zip attached
+
+The workflow requires an `ANTHROPIC_API_KEY` secret in the repo settings.
+
 ## File structure
 ```
 manifest.json            Chrome extension manifest (MV3)
@@ -61,6 +71,9 @@ assets/
   icon.png               Source icon
   icon-{16,32,48,128}.png  Resized icons for Chrome
   logo.svg               Logo for README
+.github/
+  workflows/
+    release.yml          Auto-versioning and release on push to main
 ```
 
 ## Rules for every change

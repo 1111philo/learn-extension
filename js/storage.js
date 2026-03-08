@@ -87,7 +87,7 @@ export async function saveServiceCredentials(creds) {
   await chrome.storage.local.set({ serviceCredentials: creds });
 }
 
-// --- Developer mode ---
+// --- Data sharing (telemetry) ---
 
 export async function getDevMode() {
   const result = await chrome.storage.local.get('devMode');

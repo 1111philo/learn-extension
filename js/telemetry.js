@@ -1,6 +1,6 @@
 /**
  * Telemetry client — buffers events and sends to learn-service.
- * Only active when dev mode is enabled. Fire-and-forget, never blocks UI.
+ * Only active when data sharing is enabled. Fire-and-forget, never blocks UI.
  */
 
 const SERVICE_URL = 'https://czrqy8ea0a.execute-api.us-east-1.amazonaws.com';

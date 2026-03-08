@@ -16,7 +16,7 @@ Thank you for your interest in contributing. This project is maintained by [11:1
 - Course definitions live in `data/courses.json`.
 - Agent system prompts live in `prompts/*.md` -- edit these to change agent behavior without touching code.
 - `.env.js` seeds your API key and name into storage on first load. It only writes if the values aren't already set, so it won't overwrite manual changes in Settings.
-- Enable **Developer mode** in Settings > Data Management to log all agent interactions locally and send anonymous telemetry to `learn-service`. A consent notice explains what is and isn't sent. Export the JSON to inspect agent requests, responses, and errors.
+- Enable **Share data with 11:11** in Settings > Data Management to log all agent interactions locally and send anonymous telemetry to `learn-service`. A consent notice explains what is and isn't sent. Export the JSON to inspect agent requests, responses, and errors.
 
 ## Architecture
 
@@ -45,7 +45,7 @@ Activities must:
 
 - **Accessibility is required.** Every interactive element must be keyboard-operable and have an accessible name. Test with a screen reader when adding UI.
 - **Keep it lightweight.** No frameworks, no heavy dependencies. The app must perform well on Chromebooks and Android tablets.
-- **Local-first.** External calls go to the Anthropic API (user's own key) and, when dev mode is enabled, anonymous telemetry to `learn-service`. No screenshots, API keys, or personal info are ever sent. A consent dialog is shown before enabling telemetry.
+- **Local-first.** External calls go to the Anthropic API (user's own key) and, when data sharing is enabled, anonymous telemetry to `learn-service`. Screenshots and API keys are never sent, but feedback text the user writes may be included. A consent dialog is shown before enabling data sharing.
 - **Update documentation.** If your change adds, removes, or renames a feature, file, or permission, update README.md and CLAUDE.md accordingly.
 - **Test prompts.** When editing `prompts/*.md`, test with a real API key to verify the agent returns valid JSON.
 

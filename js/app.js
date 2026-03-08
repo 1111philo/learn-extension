@@ -1100,10 +1100,10 @@ async function renderSettings() {
     <div class="settings-section">
       <h3>Data Management</h3>
       <div class="toggle-row">
-        <label for="dev-mode-toggle">Developer mode</label>
+        <label for="dev-mode-toggle">Share data with 11:11</label>
         <input type="checkbox" id="dev-mode-toggle" role="switch" ${devModeOn ? 'checked' : ''}>
       </div>
-      <p class="settings-hint">Logs agent interactions locally and sends anonymous telemetry. No screenshots, API keys, or personal info are ever sent. You can disable this at any time.</p>
+      <p class="settings-hint">Logs agent interactions locally and sends anonymous telemetry to help improve the extension. Screenshots and API keys are never sent, but feedback text you write may be included. You can disable this at any time.</p>
     </div>
     <div class="settings-actions">
       <button id="export-btn" class="settings-action-btn">
@@ -1158,17 +1158,17 @@ async function renderSettings() {
     showFormFeedback('prefs-feedback', 'Saved!');
   });
 
-  // Developer mode toggle with consent notice
+  // Data sharing toggle with consent notice
   $('#dev-mode-toggle').addEventListener('change', async (e) => {
     if (e.target.checked) {
       // Show consent notice before enabling
       const main = $main();
       main.innerHTML = `
-        <div class="confirm-container" role="alertdialog" aria-label="Developer mode consent">
-          <h2>Enable Developer Mode?</h2>
-          <p>This will log agent interactions locally and send <strong>anonymous usage telemetry</strong> to help improve the extension.</p>
-          <p><strong>What is sent:</strong> agent prompts, responses, feedback text, scores, activity metadata, and error messages.</p>
-          <p><strong>What is never sent:</strong> screenshots, your API key, your name, or any personal account information.</p>
+        <div class="confirm-container" role="alertdialog" aria-label="Data sharing consent">
+          <h2>Share Data with 11:11?</h2>
+          <p>This will log agent interactions locally and send <strong>anonymous usage telemetry</strong> to 11:11 Philosopher's Group to help improve the extension.</p>
+          <p><strong>What is sent:</strong> agent prompts, responses, feedback text you write, scores, activity metadata, and error messages.</p>
+          <p><strong>What is never sent:</strong> screenshots, your API key, or your name.</p>
           <p>Data is tied to a random anonymous ID (not your identity), retained for 90 days, and used solely to improve learning quality. You can disable this at any time in Settings.</p>
           <div class="action-bar">
             <button id="cancel-devmode-btn" class="secondary-btn">Cancel</button>
@@ -1183,13 +1183,13 @@ async function renderSettings() {
           extensionVersion: chrome.runtime.getManifest().version,
           platform: navigator.platform,
         });
-        announce('Developer mode on');
+        announce('Data sharing on');
         renderSettings();
       });
     } else {
       await saveDevMode(false);
       flushNow();
-      announce('Developer mode off');
+      announce('Data sharing off');
     }
   });
 

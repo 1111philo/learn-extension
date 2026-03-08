@@ -22,7 +22,7 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 - **Final assessment** -- the final work product must meet a minimum passing threshold
 - **Portfolio** -- work cards show progress bars and recording counts; tap into a Build Detail view with full draft timeline and on-demand screenshots
 - **Build narrative** -- activity type labels (Research, Practice, Draft, Deliver) and a completion summary card celebrate your process
-- **Developer mode** -- toggle in Settings to log all agent requests, responses, feedback, and errors; included in JSON export. When enabled, usage telemetry including agent prompts and responses is sent to help improve the extension (no screenshots or API keys)
+- **Share data with 11:11** -- toggle in Settings to log all agent interactions locally and send anonymous telemetry to 11:11 Philosopher's Group. Includes agent prompts, responses, feedback text you write, scores, and errors. Screenshots and API keys are never sent. Included in JSON export
 - **JSON export** -- export all saved data (metadata + screenshots + dev logs) at any time
 - **Keyboard shortcuts** -- Enter submits inputs, Cmd/Ctrl+Enter submits textareas, Escape dismisses dialogs
 - **Fully local** -- screenshots are stored in IndexedDB; metadata in `chrome.storage.local`. Only API calls to Anthropic are made (with the user's own key).
@@ -51,7 +51,7 @@ js/
   courses.js             Course loading and prerequisite checking
   api.js                 Anthropic API client
   orchestrator.js        Agent orchestration + output validation
-  telemetry.js           Anonymous usage telemetry (opt-in via dev mode)
+  telemetry.js           Anonymous usage telemetry (opt-in via data sharing toggle)
 prompts/
   course-creation.md     System prompt for Course Creation Agent
   activity-creation.md   System prompt for Activity Creation Agent
@@ -117,7 +117,7 @@ Each course in `data/courses.json` has:
 | Host                        | Why                                    |
 |-----------------------------|----------------------------------------|
 | `https://api.anthropic.com/*` | Send requests to the Claude API with the user's own key |
-| `https://czrqy8ea0a.execute-api.us-east-1.amazonaws.com/*` | Send anonymous telemetry when dev mode is enabled |
+| `https://czrqy8ea0a.execute-api.us-east-1.amazonaws.com/*` | Send anonymous telemetry when data sharing is enabled |
 | `<all_urls>`                | Capture screenshots of the active tab for AI assessment |
 
 ## License

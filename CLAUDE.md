@@ -19,7 +19,7 @@ All activity and assessment outputs pass through deterministic validators in `js
 The profile updates after both assessments and learner feedback. A code-level `mergeProfile()` in `app.js` unions array fields and merges preferences so agent responses can never accidentally lose accumulated data.
 
 ### Telemetry
-When dev mode is enabled, `js/telemetry.js` buffers usage events and sends them to `learn-service` (separate repo). Events include full agent I/O (prompts, responses, feedback) for debugging and improvement. Screenshots and API keys are never sent. A consent notice is shown when enabling dev mode. The telemetry client is fire-and-forget and never blocks the UI. Service credentials are stored in `chrome.storage.local` under `serviceCredentials`.
+When data sharing is enabled (via "Share data with 11:11" toggle in Settings), `js/telemetry.js` buffers usage events and sends them to `learn-service` (separate repo). Events include full agent I/O (prompts, responses, feedback) for debugging and improvement. Screenshots and API keys are never sent, but feedback text the user writes may be included. A consent notice is shown when enabling data sharing. The telemetry client is fire-and-forget and never blocks the UI. Service credentials are stored in `chrome.storage.local` under `serviceCredentials`.
 
 ## Key conventions
 - All source is vanilla JS (ES modules), CSS, and HTML -- no local build step, no frameworks. CI packages the extension into a zip on push to `main`.
@@ -59,7 +59,7 @@ js/
   courses.js             Course loading and prerequisite checking
   api.js                 Anthropic API client (fetch wrapper)
   orchestrator.js        Agent orchestration (prompt loading, context assembly, model routing, output validation)
-  telemetry.js           Anonymous usage telemetry (opt-in via dev mode)
+  telemetry.js           Anonymous usage telemetry (opt-in via data sharing toggle)
 prompts/
   course-creation.md     System prompt for Course Creation Agent
   activity-creation.md   System prompt for Activity Creation Agent

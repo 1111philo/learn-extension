@@ -29,7 +29,8 @@ let state = {
   progress: null,
   allProgress: {},
   preferences: null,
-  activeWorkCourseId: null  // for work-detail view
+  activeWorkCourseId: null,  // for work-detail view
+  generating: null           // { courseId, promise } — in-flight generation tracker
 };
 
 // Activity type → user-facing label
@@ -139,6 +140,7 @@ function statusIcon(s) {
 
 function progressLabel(course, locked) {
   if (locked) return 'Requires ' + course.dependsOn;
+  if (state.generating?.courseId === course.courseId) return 'Generating…';
   const prog = state.allProgress[course.courseId];
   if (!prog) return 'Not started';
   const workName = prog.learningPlan?.finalWorkProductDescription;
@@ -159,6 +161,14 @@ async function startOrResumeCourse(courseId) {
   let progress = await getCourseProgress(courseId);
 
   if (!progress) {
+    // If already generating this course, just navigate to it
+    if (state.generating?.courseId === courseId) {
+      state.activeCourseId = courseId;
+      state.view = 'course';
+      render();
+      return;
+    }
+
     // Check API key
     const ready = await orchestrator.isReady();
     if (!ready) {
@@ -166,21 +176,27 @@ async function startOrResumeCourse(courseId) {
       return;
     }
 
-    const main = $main();
-    const totalSteps = 3;
+    state.activeCourseId = courseId;
+    state.view = 'course';
 
-    function showStep(step, label) {
-      main.innerHTML = `
-        <div class="loading-container" role="status" aria-live="polite">
-          <div class="loading-spinner" aria-hidden="true"></div>
-          <p>Setting up your course...</p>
-          <p class="loading-substep" aria-label="Step ${step} of ${totalSteps}: ${label}">Step ${step} of ${totalSteps}: ${label}</p>
-        </div>`;
-    }
+    const promise = (async () => {
+      const main = $main();
+      const totalSteps = 3;
 
-    showStep(1, 'Analyzing your profile');
+      function showStep(step, label) {
+        // Only update DOM if we're still viewing this course
+        if (state.view === 'course' && state.activeCourseId === courseId) {
+          main.innerHTML = `
+            <div class="loading-container" role="status" aria-live="polite">
+              <div class="loading-spinner" aria-hidden="true"></div>
+              <p>Setting up your course...</p>
+              <p class="loading-substep" aria-label="Step ${step} of ${totalSteps}: ${label}">Step ${step} of ${totalSteps}: ${label}</p>
+            </div>`;
+        }
+      }
 
-    try {
+      showStep(1, 'Analyzing your profile');
+
       const profileSummary = await getLearnerProfileSummary();
       const completedNames = Object.entries(state.allProgress)
         .filter(([, p]) => p.status === 'completed')
@@ -193,7 +209,7 @@ async function startOrResumeCourse(courseId) {
         course, state.preferences, profileSummary, completedNames
       );
 
-      progress = {
+      const newProgress = {
         courseId,
         status: 'in_progress',
         currentActivityIndex: 0,
@@ -201,7 +217,7 @@ async function startOrResumeCourse(courseId) {
           activities: plan.activities,
           finalWorkProductDescription: plan.finalWorkProductDescription
         },
-        activities: [],   // filled incrementally
+        activities: [],
         drafts: [],
         startedAt: Date.now(),
         completedAt: null,
@@ -210,23 +226,33 @@ async function startOrResumeCourse(courseId) {
 
       showStep(3, 'Preparing your first activity');
 
-      // Generate instruction for first activity
       const firstSlot = plan.activities[0];
       const generated = await orchestrator.generateNextActivity(
         course, firstSlot, [], profileSummary
       );
-      progress.activities.push({
+      newProgress.activities.push({
         ...firstSlot,
         instruction: generated.instruction,
         tips: generated.tips
       });
 
-      await saveCourseProgress(courseId, progress);
-      state.allProgress[courseId] = progress;
+      await saveCourseProgress(courseId, newProgress);
+      state.allProgress[courseId] = newProgress;
+      return newProgress;
+    })();
+
+    state.generating = { courseId, promise };
+    render();
+
+    try {
+      progress = await promise;
     } catch (e) {
+      state.generating = null;
       handleApiError(e);
       return;
     }
+
+    state.generating = null;
   }
 
   state.activeCourseId = courseId;
@@ -239,10 +265,21 @@ async function renderCourse() {
   const main = $main();
   const course = state.courses.find((c) => c.courseId === state.activeCourseId);
   const p = state.progress;
+
+  // Course is still being set up (no progress yet)
+  if (!p || !p.learningPlan) {
+    main.innerHTML = `
+      <div class="loading-container" role="status" aria-live="polite">
+        <div class="loading-spinner" aria-hidden="true"></div>
+        <p>Setting up your course...</p>
+      </div>`;
+    return;
+  }
+
   const planActivities = p.learningPlan.activities;
   const currentSlot = planActivities[p.currentActivityIndex];
 
-  // If current activity hasn't been generated yet, generate it
+  // If current activity hasn't been generated yet, generate it (or wait for in-flight generation)
   if (!p.activities[p.currentActivityIndex]) {
     main.innerHTML = `
       <div class="loading-container" role="status" aria-live="polite">
@@ -250,11 +287,25 @@ async function renderCourse() {
         <p>Preparing your next activity...</p>
       </div>`;
 
-    try {
+    // If already generating for this course, wait for it
+    if (state.generating?.courseId === p.courseId) {
+      try {
+        await state.generating.promise;
+      } catch (e) {
+        handleApiError(e);
+        return;
+      }
+      // Re-fetch progress after generation completes
+      state.progress = state.allProgress[p.courseId];
+      render();
+      return;
+    }
+
+    const promise = (async () => {
       const profileSummary = await getLearnerProfileSummary();
       const progressSummary = p.activities
         .slice(0, p.currentActivityIndex)
-        .map((a, i) => {
+        .map((a) => {
           const drafts = p.drafts.filter(d => d.activityId === a.id);
           const last = drafts[drafts.length - 1];
           return { type: a.type, score: last?.score, keyFeedback: last?.feedback?.slice(0, 100) };
@@ -271,10 +322,21 @@ async function renderCourse() {
       };
 
       await saveCourseProgress(p.courseId, p);
+    })();
+
+    state.generating = { courseId: p.courseId, promise };
+
+    try {
+      await promise;
     } catch (e) {
+      state.generating = null;
       handleApiError(e);
       return;
     }
+
+    state.generating = null;
+    render();
+    return;
   }
 
   const activity = p.activities[p.currentActivityIndex];

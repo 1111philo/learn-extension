@@ -502,8 +502,6 @@ async function regenerateCurrentActivity(course, p) {
   const feedbackText = $('#feedback-input')?.value?.trim();
   if (!feedbackText) return;
 
-  logDev('learner_feedback', { feedback: feedbackText, courseId: course.courseId, activityIndex: p.currentActivityIndex });
-
   const main = $main();
   main.innerHTML = `
     <div class="loading-container" role="status" aria-live="polite">
@@ -537,8 +535,13 @@ async function regenerateCurrentActivity(course, p) {
 
     await saveCourseProgress(p.courseId, p);
     trackEvent('activity_regenerated', {
-      courseId: course.courseId, activityIndex: p.currentActivityIndex,
+      courseId: course.courseId,
+      activityIndex: p.currentActivityIndex,
       activityType: currentSlot.type,
+      activityGoal: currentSlot.goal,
+      originalInstruction: activity.instruction,
+      learnerFeedback: feedbackText,
+      newInstruction: generated.instruction,
     });
     updateProfileFromFeedbackInBackground(feedbackText, course, currentSlot);
     render();
@@ -606,8 +609,6 @@ async function submitDispute(course, p, activity, draft) {
   const feedbackText = $('#dispute-input')?.value?.trim();
   if (!feedbackText) return;
 
-  logDev('dispute', { feedback: feedbackText, courseId: course.courseId, draftId: draft.id });
-
   const main = $main();
   main.innerHTML = `
     <div class="loading-container" role="status" aria-live="polite">
@@ -645,7 +646,22 @@ async function submitDispute(course, p, activity, draft) {
     draft.disputed = true;
 
     trackEvent('dispute', {
-      courseId: course.courseId, originalScore, revisedScore: result.score,
+      courseId: course.courseId,
+      activityType: activity.type,
+      activityGoal: activity.goal,
+      activityInstruction: activity.instruction,
+      originalAssessment: previousAssessment,
+      learnerFeedback: feedbackText,
+      revisedAssessment: {
+        feedback: result.feedback,
+        strengths: result.strengths,
+        improvements: result.improvements,
+        score: result.score,
+        recommendation: result.recommendation,
+      },
+      originalScore,
+      revisedScore: result.score,
+      scoreChanged: originalScore !== result.score,
     });
 
     // Handle completion changes
@@ -731,9 +747,17 @@ async function recordDraft(activity) {
 
     const attemptNumber = priorDrafts.length + 1;
     trackEvent('draft_submitted', {
-      courseId: p.courseId, activityIndex: p.currentActivityIndex,
-      activityType: activity.type, attemptNumber,
-      score: result.score, recommendation: result.recommendation,
+      courseId: p.courseId,
+      activityIndex: p.currentActivityIndex,
+      activityType: activity.type,
+      activityGoal: activity.goal,
+      activityInstruction: activity.instruction,
+      attemptNumber,
+      score: result.score,
+      recommendation: result.recommendation,
+      feedback: result.feedback,
+      strengths: result.strengths,
+      improvements: result.improvements,
     });
 
     // Advance or complete
@@ -1072,7 +1096,7 @@ async function renderSettings() {
         <label for="dev-mode-toggle">Developer mode</label>
         <input type="checkbox" id="dev-mode-toggle" role="switch" ${devModeOn ? 'checked' : ''}>
       </div>
-      <p class="settings-hint">Logs agent requests, responses, feedback, and errors. Included in JSON export.</p>
+      <p class="settings-hint">Logs agent interactions locally and sends anonymous telemetry. No screenshots, API keys, or personal info are ever sent. You can disable this at any time.</p>
     </div>
     <div class="settings-actions">
       <button id="export-btn" class="settings-action-btn">
@@ -1135,8 +1159,10 @@ async function renderSettings() {
       main.innerHTML = `
         <div class="confirm-container" role="alertdialog" aria-label="Developer mode consent">
           <h2>Enable Developer Mode?</h2>
-          <p>This will log agent interactions locally and send <strong>anonymous usage data</strong> to help improve the extension — including agent prompts, responses, and feedback. No screenshots, API keys, or account info are ever sent.</p>
-          <p class="settings-hint">You can disable this at any time.</p>
+          <p>This will log agent interactions locally and send <strong>anonymous usage telemetry</strong> to help improve the extension.</p>
+          <p><strong>What is sent:</strong> agent prompts, responses, feedback text, scores, activity metadata, and error messages.</p>
+          <p><strong>What is never sent:</strong> screenshots, your API key, your name, or any personal account information.</p>
+          <p>Data is tied to a random anonymous ID (not your identity), retained for 90 days, and used solely to improve learning quality. You can disable this at any time in Settings.</p>
           <div class="action-bar">
             <button id="cancel-devmode-btn" class="secondary-btn">Cancel</button>
             <button id="confirm-devmode-btn" class="primary-btn">Enable</button>

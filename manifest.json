@@ -21,8 +21,7 @@
   },
   "host_permissions": [
     "https://api.anthropic.com/*",
-    "https://czrqy8ea0a.execute-api.us-east-1.amazonaws.com/*",
-    "<all_urls>"
+    "https://czrqy8ea0a.execute-api.us-east-1.amazonaws.com/*"
   ],
   "background": {
     "service_worker": "background.js"

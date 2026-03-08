@@ -119,7 +119,6 @@ Each course in `data/courses.json` has:
 |-----------------------------|----------------------------------------|
 | `https://api.anthropic.com/*` | Send requests to the Claude API with the user's own key |
 | `https://czrqy8ea0a.execute-api.us-east-1.amazonaws.com/*` | Send anonymous telemetry when data sharing is enabled |
-| `<all_urls>`                | Capture screenshots of the active tab for AI assessment |
 
 ## Privacy
 

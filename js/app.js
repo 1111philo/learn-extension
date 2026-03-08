@@ -374,25 +374,6 @@ async function renderCourse() {
     html += completionSummary(course, p);
   }
 
-  // Prior activities (collapsed below current work)
-  if (p.currentActivityIndex > 0) {
-    const priorItems = [];
-    for (let i = p.currentActivityIndex - 1; i >= 0; i--) {
-      const prev = p.activities[i];
-      if (!prev) continue;
-      const prevDrafts = p.drafts.filter((d) => d.activityId === prev.id);
-      const prevLabel = TYPE_LABELS[prev.type] || prev.type;
-      const lastPrev = prevDrafts[prevDrafts.length - 1];
-      const scorePercent = lastPrev ? Math.round((lastPrev.score || 0) * 100) : null;
-      priorItems.push(`<div class="prior-step">
-        <span class="prior-type">${esc(prevLabel)}</span>
-        <span class="prior-goal">${esc(prev.goal || '')}</span>
-        ${scorePercent !== null ? `<span class="prior-score">${scorePercent}%</span>` : ''}
-      </div>`);
-    }
-    html += `<details class="prior-activities"><summary>Previous steps (${p.currentActivityIndex})</summary>${priorItems.join('')}</details>`;
-  }
-
   html += '</div>';
 
   // Action bar
@@ -420,6 +401,25 @@ async function renderCourse() {
     }
 
     html += '</div>';
+  }
+
+  // Prior activities (below action bar)
+  if (p.currentActivityIndex > 0) {
+    const priorItems = [];
+    for (let i = p.currentActivityIndex - 1; i >= 0; i--) {
+      const prev = p.activities[i];
+      if (!prev) continue;
+      const prevDrafts = p.drafts.filter((d) => d.activityId === prev.id);
+      const prevLabel = TYPE_LABELS[prev.type] || prev.type;
+      const lastPrev = prevDrafts[prevDrafts.length - 1];
+      const scorePercent = lastPrev ? Math.round((lastPrev.score || 0) * 100) : null;
+      priorItems.push(`<div class="prior-step">
+        <span class="prior-type">${esc(prevLabel)}</span>
+        <span class="prior-goal">${esc(prev.goal || '')}</span>
+        ${scorePercent !== null ? `<span class="prior-score">${scorePercent}%</span>` : ''}
+      </div>`);
+    }
+    html += `<hr><details class="prior-activities"><summary>Previous steps (${p.currentActivityIndex})</summary>${priorItems.join('')}</details>`;
   }
 
   main.innerHTML = html;

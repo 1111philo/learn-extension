@@ -71,9 +71,9 @@ function validateActivity(parsed) {
   const lastLine = lines[lines.length - 1]?.toLowerCase() || '';
   if (!lastLine.includes('record')) return 'Last step must tell the learner to hit Record.';
 
-  // Max 4 numbered steps
+  // Max 4 content steps + the mandatory Record step = 5 total
   const steps = instr.match(/^\d+\.\s/gm);
-  if (steps && steps.length > 4) return 'Too many steps (max 4).';
+  if (steps && steps.length > 5) return 'Too many steps (max 4 plus Record).';
 
   // No platform-specific shortcuts
   if (PLATFORM_SHORTCUTS.test(instr)) return 'Contains platform-specific keyboard shortcuts.';

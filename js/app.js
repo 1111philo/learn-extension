@@ -1347,9 +1347,12 @@ function esc(s) {
 /** Convert URLs in already-escaped text into clickable links. */
 /** Convert URLs in already-escaped text into clickable links. Handles both https://... and bare domain.tld/path URLs. */
 function linkify(escaped) {
+  // Runs on HTML-escaped text. Match URLs, stopping at whitespace, quotes, or HTML entities.
   return escaped.replace(
-    /(?:https?:\/\/)?(?:[\w-]+\.)+[a-z]{2,}(?:\/[^\s&lt;&amp;)"\]]*)?/gi,
+    /(?:https?:\/\/)?(?:[\w-]+\.)+[a-z]{2,}(?:\/[^\s")\]]*)?/gi,
     match => {
+      // Strip trailing HTML entities that got swept in (e.g. "&gt;" at end)
+      match = match.replace(/&[a-z]+;$/, '');
       // Skip things that look like file extensions (e.g. "style.css") — require a slash or known domain
       if (!match.includes('/') && !match.startsWith('http') && !/\.(com|org|net|io|dev|co|edu|gov|app|me)\b/i.test(match)) return match;
       const href = match.startsWith('http') ? match : `https://${match}`;

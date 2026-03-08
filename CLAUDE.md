@@ -22,7 +22,7 @@ The profile updates after both assessments and learner feedback. A code-level `m
 When dev mode is enabled, `js/telemetry.js` buffers usage events and sends them to `learn-service` (separate repo). Events include full agent I/O (prompts, responses, feedback) for debugging and improvement. Screenshots and API keys are never sent. A consent notice is shown when enabling dev mode. The telemetry client is fire-and-forget and never blocks the UI. Service credentials are stored in `chrome.storage.local` under `serviceCredentials`.
 
 ## Key conventions
-- All source is vanilla JS (ES modules), CSS, and HTML -- no build step, no frameworks.
+- All source is vanilla JS (ES modules), CSS, and HTML -- no local build step, no frameworks. CI packages the extension into a zip on push to `main`.
 - Course definitions live in `data/courses.json`.
 - The app entry point is `sidepanel.html`, which loads `js/app.js` as a module.
 - Storage is abstracted in `js/storage.js` (chrome.storage.local for metadata, IndexedDB for screenshots).
@@ -85,3 +85,4 @@ assets/
 6. When editing agent prompts, test with a real API key to verify JSON output format.
 7. Never commit API keys or secrets.
 8. Activities must be completable entirely in the browser -- never reference desktop apps, terminals, or file system operations.
+9. Do not manually bump the version in `manifest.json` -- the CI/CD workflow handles versioning automatically on push to `main`.

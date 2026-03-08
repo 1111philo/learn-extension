@@ -27,7 +27,7 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 - **Keyboard shortcuts** -- Enter submits inputs, Cmd/Ctrl+Enter submits textareas, Escape dismisses dialogs
 - **Fully local** -- screenshots are stored in IndexedDB; metadata in `chrome.storage.local`. Only API calls to Anthropic are made (with the user's own key).
 - **Accessible** -- keyboard-operable, screen-reader-friendly, respects `prefers-reduced-motion` and `forced-colors`
-- **Lightweight** -- vanilla JS, no frameworks, no build step; designed for Chromebooks and Android tablets
+- **Lightweight** -- vanilla JS, no frameworks, no local build step; designed for Chromebooks and Android tablets
 
 ## Install (developer mode)
 
@@ -63,6 +63,9 @@ assets/
   icon.png               Source icon
   icon-{16,32,48,128}.png  Resized icons for Chrome
   logo.svg               Logo for README
+.github/
+  workflows/
+    release.yml          Auto-versioning and release on push to main
 ```
 
 ## Releases

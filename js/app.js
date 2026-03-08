@@ -1170,8 +1170,8 @@ async function renderSettings() {
           <p><strong>What is collected:</strong> agent prompts, AI responses, feedback text you write, scores, activity metadata, and error messages.</p>
           <p><strong>What is never collected:</strong> screenshots and your API key.</p>
           <p><strong>How it's stored:</strong> data is tied to a random anonymous ID (not your identity), sent to a secure server, and automatically deleted after 90 days.</p>
-          <p><strong>Your rights:</strong> you can withdraw consent at any time by turning this off. Disabling stops all future data collection. To request deletion of previously collected data, contact <a href="mailto:privacy@philosophers.group">privacy@philosophers.group</a>.</p>
-          <p>See our <a href="https://github.com/1111philo/learn-extension#privacy" target="_blank" rel="noopener">privacy policy</a> for full details.</p>
+          <p><strong>Your rights:</strong> you can withdraw consent at any time by turning this off. Disabling stops all future data collection. To request deletion of previously collected data, contact <a href="mailto:1111@philosophers.group">1111@philosophers.group</a> or <a href="https://github.com/1111philo/learn-extension/issues" target="_blank" rel="noopener">open an issue</a>.</p>
+          <p>See our <a href="https://github.com/1111philo/learn-extension/blob/main/PRIVACY.md" target="_blank" rel="noopener">privacy policy</a> for full details.</p>
           <div class="action-bar">
             <button id="cancel-devmode-btn" class="secondary-btn">Cancel</button>
             <button id="confirm-devmode-btn" class="primary-btn">I Agree</button>

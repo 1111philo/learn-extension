@@ -71,6 +71,7 @@ assets/
   icon.png               Source icon
   icon-{16,32,48,128}.png  Resized icons for Chrome
   logo.svg               Logo for README
+PRIVACY.md               Privacy policy (GDPR-compliant)
 .github/
   workflows/
     release.yml          Auto-versioning and release on push to main

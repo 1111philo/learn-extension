@@ -63,6 +63,7 @@ assets/
   icon.png               Source icon
   icon-{16,32,48,128}.png  Resized icons for Chrome
   logo.svg               Logo for README
+PRIVACY.md               Privacy policy
 .github/
   workflows/
     release.yml          Auto-versioning and release on push to main
@@ -122,29 +123,15 @@ Each course in `data/courses.json` has:
 
 ## Privacy
 
-1111 Learn is local-first. All learning data (course progress, screenshots, learner profile) is stored on your device and never leaves it.
+1111 Learn is local-first. All learning data stays on your device by default. Optional anonymous telemetry can be enabled to help improve the extension. See our full [Privacy Policy](PRIVACY.md) for details.
 
-### Optional data sharing
+- **Local by default**: course progress, screenshots, learner profile, and API key never leave your device.
+- **Opt-in telemetry**: "Share data with 11:11" in Settings sends anonymous usage data (agent I/O, feedback text, scores). Screenshots and API keys are never sent.
+- **Anonymous**: data is tied to a random ID, not your identity.
+- **90-day retention**: telemetry is automatically deleted.
+- **Your rights**: withdraw consent anytime, request deletion via [1111@philosophers.group](mailto:1111@philosophers.group) or [open an issue](https://github.com/1111philo/learn-extension/issues).
 
-If you enable **Share data with 11:11** in Settings, anonymous usage telemetry is sent to 11:11 Philosopher's Group to improve the extension:
-
-| Collected | Not collected |
-|-----------|---------------|
-| Agent prompts and AI responses | Screenshots |
-| Feedback text you write | Your Anthropic API key |
-| Scores and activity metadata | Your name or email |
-| Error messages | IP address (not stored) |
-
-- **Consent**: data sharing is off by default. You must explicitly opt in via the toggle, which shows a consent dialog. Your consent timestamp is recorded locally.
-- **Anonymity**: data is tied to a random anonymous ID generated on your device. It cannot be linked to your identity.
-- **Retention**: telemetry data is automatically deleted after 90 days.
-- **Withdrawal**: you can disable data sharing at any time. This immediately stops all future data collection.
-- **Deletion**: to request deletion of previously collected data, email [privacy@philosophers.group](mailto:privacy@philosophers.group).
-- **Data controller**: 11:11 Philosopher's Group ([philosophers.group](https://philosophers.group)).
-
-### API calls
-
-The extension makes calls to the Anthropic API using your own API key. These calls are between you and Anthropic — 11:11 Philosopher's Group has no access to them.
+API calls to Anthropic use your own key and are governed by [Anthropic's privacy policy](https://www.anthropic.com/privacy).
 
 ## License
 

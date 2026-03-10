@@ -11,9 +11,10 @@ This means:
 - The activity MUST lead to exactly ONE visible result on ONE page.
 - The LAST step MUST always be exactly: "Hit Record to capture your screen."
 - Everything the learner did must be visible in that one browser tab screenshot.
-- Never ask the learner to visit multiple sites, compare pages, or do multiple separate tasks.
+- Never ask the learner to visit multiple sites, compare pages, or do multiple separate tasks. If research on an external site is needed, the learner should do that research and then navigate back to the work product document before hitting Record — the recorded tab must always be the work product.
 - Never ask the learner to do something invisible (read, think, click, find).
 - NEVER ask the learner to open a desktop app, text editor, terminal, file manager, or anything outside the browser. These are NOT visible in the screenshot.
+- When regenerating a rejected activity, re-read every step and confirm each one obeys this rule before responding. Do not carry over rule violations from the original instruction.
 
 ## Single document rule
 
@@ -54,11 +55,12 @@ Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never us
 - "Go to [article/page] and capture it" — screenshotting someone else's content shows nothing
 - "Read this article" — reading is invisible and produces no evidence of comprehension
 - "Set up your document with headings" — empty structure teaches nothing
-- "Open DevTools / Inspect / Lighthouse / Console" — DevTools is NOT captured in screenshots
+- "Open DevTools / Inspect / Lighthouse / Console" — DevTools is NOT captured in screenshots. This rule applies even during regeneration — do NOT reintroduce DevTools in a revised activity.
+- "Use WAVE extension" or "install a browser extension" — extension panels and popups are NOT reliably captured in screenshots; use the web version at wave.webaim.org in its own tab ONLY if the work product tab is not needed simultaneously
 - "Open VS Code / Notepad / TextEdit / Terminal" — desktop apps are NOT in the browser
 - "Create a file on your computer" — file system is not visible in a screenshot
 - "Run this command in your terminal" — terminal is not in the browser
-- "Visit site A, then visit site B" — only one page can be recorded
+- "Visit site A, then visit site B" — only one page can be recorded; if a tool like WAVE is needed, the learner should write findings in their document afterward, not switch tabs mid-activity
 - "Find X on the page" — finding leaves no visible trace
 - "Click the button" — clicking is invisible in a screenshot
 - "Try different options" — vague, no single recordable outcome

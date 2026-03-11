@@ -10,12 +10,14 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 
 ### Key features
 
-- **AI-powered learning** -- four Claude agents create personalized plans, generate activities, assess work via screenshots, and track learner progress
+- **Onboarding wizard** -- four-step first-run flow (name → personal statement → data consent → API key) that seeds an inspiring learner profile via AI
+- **Skills check** -- a mandatory diagnostic activity before every new course; the result personalizes the learning plan generated for that course
+- **AI-powered learning** -- six Claude agents handle onboarding, diagnostics, course creation, activity generation, assessment, and learner profile updates
 - **Course catalog** with prerequisite checking
-- **Personalized activity generation** adapted to the learner's profile and prior work
+- **Personalized activity generation** adapted to the learner's profile, prior work, and diagnostic result
 - **AI assessment with vision** -- the Assessment Agent analyzes screenshots of your work and provides structured feedback with strengths, improvements, score, and a recommendation
 - **Output validation** -- deterministic validators check every agent response for safety, format compliance, and activity constraints (browser-only, single page, etc.) before showing it to the learner
-- **Learner profile** -- tracks your strengths, weaknesses, preferences, and learning patterns across courses; updated after assessments and feedback
+- **Learner profile** -- tracks your strengths, weaknesses, preferences, and learning patterns across courses; updated after assessments, diagnostic results, and feedback
 - **Activity feedback** -- submit feedback on any activity to regenerate it while keeping the same learning goal
 - **Draft recording** -- captures a screenshot of the active tab, the page URL, and AI-generated feedback
 - **Iterative feedback** -- each activity builds on prior drafts and feedback
@@ -36,7 +38,7 @@ An agentic learning app that runs entirely in the Chrome side panel. Built by [1
 3. Enable **Developer mode**.
 4. Click **Load unpacked** and select the project folder.
 5. Click the 1111 extension icon to open the side panel.
-6. Go to **Settings** and enter your Anthropic API key.
+6. Complete the onboarding wizard: enter your name, a personal statement, consent to data sharing (optional), and your Anthropic API key.
 
 ## File structure
 
@@ -53,10 +55,13 @@ js/
   orchestrator.js        Agent orchestration + output validation
   telemetry.js           Anonymous usage telemetry (opt-in via data sharing toggle)
 prompts/
-  course-creation.md     System prompt for Course Creation Agent
-  activity-creation.md   System prompt for Activity Creation Agent
-  activity-assessment.md System prompt for Activity Assessment Agent
-  learner-profile-update.md  System prompt for Learner Profile Agent
+  course-creation.md        System prompt for Course Creation Agent
+  activity-creation.md      System prompt for Activity Creation Agent
+  activity-assessment.md    System prompt for Activity Assessment Agent
+  diagnostic-creation.md    System prompt for Diagnostic (Skills Check) Agent
+  diagnostic-assessment.md  System prompt for Diagnostic Assessment Agent (evaluates skills check screenshots)
+  onboarding-profile.md     System prompt for Onboarding Profile Agent
+  learner-profile-update.md System prompt for Learner Profile Agent
 data/
   courses.json           Predefined course definitions
 assets/
@@ -84,10 +89,12 @@ Maintainers must add an `ANTHROPIC_API_KEY` secret to the repository settings fo
 
 | Agent | Model | Purpose |
 |-------|-------|---------|
-| Course Creation | `claude-haiku-4-5` | Generates a personalized learning plan from course objectives |
+| Onboarding Profile | `claude-haiku-4-5` | Creates an inspiring initial learner profile from the user's name and personal statement |
+| Diagnostic (Skills Check) | `claude-haiku-4-5` | Generates a brief pre-course assessment activity to gauge prior knowledge |
+| Course Creation | `claude-haiku-4-5` | Generates a personalized learning plan informed by the diagnostic result |
 | Activity Creation | `claude-haiku-4-5` | Fills in detailed instructions for one activity at a time |
 | Activity Assessment | `claude-sonnet-4-6` | Evaluates screenshots with vision + provides structured feedback |
-| Learner Profile | `claude-haiku-4-5` | Incrementally updates learner profile after assessments and feedback |
+| Learner Profile | `claude-haiku-4-5` | Incrementally updates learner profile after assessments, diagnostic results, and feedback |
 
 Agent prompts are stored as markdown files in `prompts/` and can be edited without changing code. All activity and assessment outputs are validated before reaching the user.
 

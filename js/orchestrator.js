@@ -149,9 +149,61 @@ export async function isReady() {
 }
 
 /**
+ * Initialize a learner profile from onboarding name + statement.
+ */
+export async function initializeLearnerProfile(name, statement) {
+  const apiKey = await requireKey();
+  const systemPrompt = await loadPrompt('onboarding-profile');
+
+  const { content } = await callClaude({
+    apiKey,
+    model: MODEL_LIGHT,
+    systemPrompt,
+    messages: [{ role: 'user', content: JSON.stringify({ name, statement }) }],
+    maxTokens: 1024
+  });
+
+  const parsed = parseJSON(content);
+  devLog('agent_response', { agent: 'onboarding-profile', response: parsed });
+  return parsed;
+}
+
+/**
+ * Generate a diagnostic activity that tests existing knowledge before a course.
+ */
+export async function generateDiagnosticActivity(course) {
+  const apiKey = await requireKey();
+  const systemPrompt = await loadPrompt('diagnostic-creation');
+
+  const userContent = JSON.stringify({
+    course: { name: course.name, learningObjectives: course.learningObjectives }
+  });
+
+  const callAgent = async () => {
+    const { content } = await callClaude({
+      apiKey,
+      model: MODEL_LIGHT,
+      systemPrompt,
+      messages: [{ role: 'user', content: userContent }],
+      maxTokens: 1024
+    });
+    return parseJSON(content);
+  };
+
+  const generated = await callWithValidation(callAgent, validateActivity, 'diagnostic-creation');
+  return {
+    id: `diagnostic-${course.courseId}`,
+    type: 'final',
+    goal: course.learningObjectives[course.learningObjectives.length - 1],
+    instruction: generated.instruction,
+    tips: generated.tips
+  };
+}
+
+/**
  * Create a learning plan for a course.
  */
-export async function createLearningPlan(course, preferences, profileSummary, completedCourseNames) {
+export async function createLearningPlan(course, preferences, profileSummary, completedCourseNames, diagnosticResult) {
   const apiKey = await requireKey();
   const systemPrompt = await loadPrompt('course-creation');
 
@@ -163,7 +215,8 @@ export async function createLearningPlan(course, preferences, profileSummary, co
       learningObjectives: course.learningObjectives
     },
     learnerProfile: profileSummary || `${preferences.name || 'Learner'}`,
-    completedCourses: completedCourseNames
+    completedCourses: completedCourseNames,
+    diagnosticResult: diagnosticResult || null
   });
 
   const { content } = await callClaude({
@@ -248,9 +301,9 @@ export async function regenerateActivity(course, planSlot, progressSummary, prof
 /**
  * Assess a draft submission with vision.
  */
-export async function assessDraft(course, activity, screenshotDataUrl, pageUrl, priorDrafts, profileSummary) {
+export async function assessDraft(course, activity, screenshotDataUrl, pageUrl, priorDrafts, profileSummary, promptName = 'activity-assessment') {
   const apiKey = await requireKey();
-  const systemPrompt = await loadPrompt('activity-assessment');
+  const systemPrompt = await loadPrompt(promptName);
 
   const compressedDrafts = priorDrafts.map(d => ({
     score: d.score,
@@ -310,9 +363,9 @@ export async function assessDraft(course, activity, screenshotDataUrl, pageUrl, 
  * Reassess a draft with learner feedback on the assessment.
  * Re-evaluates the same screenshot, factoring in the learner's dispute.
  */
-export async function reassessDraft(course, activity, screenshotDataUrl, pageUrl, priorDrafts, profileSummary, previousAssessment, learnerFeedback) {
+export async function reassessDraft(course, activity, screenshotDataUrl, pageUrl, priorDrafts, profileSummary, previousAssessment, learnerFeedback, promptName = 'activity-assessment') {
   const apiKey = await requireKey();
-  const systemPrompt = await loadPrompt('activity-assessment');
+  const systemPrompt = await loadPrompt(promptName);
 
   const compressedDrafts = priorDrafts.map(d => ({
     score: d.score,

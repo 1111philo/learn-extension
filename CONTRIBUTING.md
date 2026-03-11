@@ -5,7 +5,7 @@ Thank you for your interest in contributing. This project is maintained by [11:1
 ## Getting started
 
 1. Fork and clone the repository.
-2. Copy `.env.example.js` to `.env.js` and fill in your Anthropic API key and name. This file is gitignored and will never be committed. On app load, these values automatically seed storage if not already set — so you don't need to re-enter them after clearing data.
+2. Copy `.env.example.js` to `.env.js` and fill in your Anthropic API key and name. This file is gitignored and will never be committed. On app load, these values automatically seed storage — but the onboarding wizard still runs on first use. To skip onboarding in development, complete it once (or clear `chrome.storage.local` and let the seeded key pre-fill the API key step). To reset and re-run onboarding, clear `chrome.storage.local` and remove the `onboardingComplete` flag.
 3. Load the extension in Chrome using developer mode (see README.md).
 4. Make your changes and test them in the side panel.
 
@@ -15,17 +15,19 @@ Thank you for your interest in contributing. This project is maintained by [11:1
 - All source is vanilla JS (ES modules), CSS, and HTML.
 - Course definitions live in `data/courses.json`.
 - Agent system prompts live in `prompts/*.md` -- edit these to change agent behavior without touching code.
-- `.env.js` seeds your API key and name into storage on first load. It only writes if the values aren't already set, so it won't overwrite manual changes in Settings.
+- `.env.js` seeds your API key and name into storage on every load (values only written if not already set). The onboarding wizard still runs regardless — it is controlled by the `onboardingComplete` storage flag, not by whether a key is present. This lets you develop against a pre-seeded key while still exercising the onboarding flow.
 - Enable **Share data with 11:11** in Settings > Data Management to log all agent interactions locally and send anonymous telemetry to `learn-service`. A consent notice explains what is and isn't sent. Export the JSON to inspect agent requests, responses, and errors.
 
 ## Architecture
 
-The app uses four AI agents orchestrated through `js/orchestrator.js`:
+The app uses six AI agents orchestrated through `js/orchestrator.js`:
 
-1. **Course Creation Agent** -- generates a learning plan skeleton
-2. **Activity Creation Agent** -- generates detailed instructions per activity
-3. **Activity Assessment Agent** -- evaluates screenshots with vision
-4. **Learner Profile Agent** -- tracks learner progress, patterns, and preferences
+1. **Onboarding Profile Agent** -- creates an inspiring initial learner profile from name and personal statement
+2. **Diagnostic Agent** -- generates a skills check activity before every new course
+3. **Course Creation Agent** -- generates a learning plan skeleton, informed by the diagnostic result
+4. **Activity Creation Agent** -- generates detailed instructions per activity
+5. **Activity Assessment Agent** -- evaluates screenshots with vision
+6. **Learner Profile Agent** -- tracks learner progress, patterns, and preferences; updated after diagnostics too
 
 All activity and assessment outputs pass through deterministic validators before reaching the user. Validators check for format compliance, safety, and activity constraints (browser-only, single page, ends with "Record").
 

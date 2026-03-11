@@ -34,13 +34,22 @@ You MUST specify the document type in `workProductTool` (e.g. "Google Doc", "Cod
 - Each activity goal must describe ONE simple task with ONE visible outcome on ONE webpage (the work product document). The learner will be assessed by a screenshot of a single browser tab.
 - NEVER write goals that involve multiple websites, multiple tools, or multiple outcomes (e.g. "audit three websites" is BAD — instead, create three separate activities, one per website).
 - All activities must be doable entirely in the browser. Never reference desktop apps, terminals, or file system operations.
-- Generate as many activities as needed per objective -- prefer more small steps over fewer large ones.
+- Generate a maximum of 5 activities total. Combine objectives into single activities where possible. Prefer fewer, well-chosen steps over an exhaustive list.
 - The last activity must always be type "final".
 - Adapt difficulty and pacing to the learner's profile.
 - If the learner has completed related courses, reference that experience.
 - Keep activity goals to one short sentence.
 - Include a brief rationale explaining your plan design.
 - finalWorkProductDescription must be a short name (2-4 words) for the deliverable, like "Accessibility Audit Report", "WordPress Portfolio", or "AI Ethics Doc". NOT a full description.
+
+## Diagnostic data
+
+If a `diagnosticResult` is provided, the learner attempted a skills check before starting the course. Use this to adapt the plan:
+- Score >= 0.8: learner has strong existing knowledge — condense or skip foundational activities, focus on refinement and the final deliverable
+- Score 0.5–0.79: learner has partial knowledge — skip the most basic activities and focus on filling gaps
+- Score < 0.5: learner is a beginner — use a thorough plan that builds knowledge step by step
+
+Always note in `rationale` how the diagnostic influenced your plan, even if minimally.
 
 Respond with ONLY valid JSON, no markdown fencing:
 

@@ -18,9 +18,10 @@ All core learning data is stored entirely on your device using Chrome's local st
 
 | Data | Storage | Purpose |
 |------|---------|---------|
+| Your name and personal statement (entered at onboarding) | `chrome.storage.local` | Create your initial learner profile and personalize the experience |
 | Course progress and activity history | `chrome.storage.local` | Track your learning journey |
 | Screenshots of your work | IndexedDB | AI assessment of your drafts |
-| Learner profile (strengths, weaknesses, preferences) | `chrome.storage.local` | Personalize future activities |
+| Learner profile (strengths, weaknesses, preferences, goal) | `chrome.storage.local` | Personalize future activities and course plans |
 | Your Anthropic API key | `chrome.storage.local` | Authenticate API calls to Anthropic |
 | Settings and preferences | `chrome.storage.local` | Remember your configuration |
 

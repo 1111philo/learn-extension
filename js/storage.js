@@ -87,6 +87,17 @@ export async function saveServiceCredentials(creds) {
   await chrome.storage.local.set({ serviceCredentials: creds });
 }
 
+// --- Onboarding ---
+
+export async function getOnboardingComplete() {
+  const result = await chrome.storage.local.get('onboardingComplete');
+  return result.onboardingComplete || false;
+}
+
+export async function saveOnboardingComplete() {
+  await chrome.storage.local.set({ onboardingComplete: true });
+}
+
 // --- Data sharing (telemetry) ---
 
 export async function getDevMode() {

@@ -59,6 +59,7 @@ main {
   overflow-y: auto;
   padding: var(--space);
   outline: none;
+  position: relative;
 }
 
 main:focus-visible {
@@ -473,17 +474,47 @@ hr {
   border: 0;
 }
 
-/* -- Confirm dialog --------------------------------------------------------- */
-.confirm-container {
+/* -- Modal overlay ---------------------------------------------------------- */
+#modal-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  /* top and height set dynamically in JS to match main's visible bounds */
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space);
+  z-index: 1000;
+}
+
+#modal-overlay[hidden] { display: none; }
+
+.modal {
+  background: var(--color-bg);
+  border-radius: calc(var(--radius) * 1.5);
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 24px 20px 20px;
+  width: 100%;
+  max-height: 80vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: var(--space);
-  padding: calc(var(--space) * 2) var(--space);
 }
 
-.confirm-container p {
+.modal h2 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal p {
   color: var(--color-text-secondary);
   font-size: 0.9rem;
+  margin: 0;
 }
 
 .danger-btn {
@@ -657,6 +688,27 @@ hr {
   margin-bottom: 8px;
 }
 
+.profile-display {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  white-space: pre-wrap;
+}
+
+.profile-display em {
+  color: var(--color-text-secondary);
+}
+
+.profile-feedback-btn {
+  padding: 6px 12px;
+  font-size: 0.85rem;
+}
+
 .settings-section label {
   display: flex;
   flex-direction: column;
@@ -827,6 +879,28 @@ hr {
   .loading-spinner { animation: none; border-top-color: var(--color-accent); }
 }
 
+/* ── Activity progress track ────────────────────────────────────────────── */
+.activity-track {
+  display: flex;
+  gap: 4px;
+  margin: -4px 0 var(--space);
+}
+
+.pip {
+  flex: 1;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--color-border);
+}
+
+.pip-done {
+  background: var(--color-text-secondary);
+}
+
+.pip-current {
+  background: var(--color-accent);
+}
+
 /* ── Course header info ─────────────────────────────────────────────────── */
 .course-header-info {
   flex: 1;
@@ -872,47 +946,83 @@ hr {
 .completion-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
   border: 2px solid var(--color-success);
-  background: #f0fdf4;
+  background: linear-gradient(160deg, #f0fdf4 0%, #eff6ff 100%);
+  padding: 28px 20px 20px;
 }
 
-.completion-card h3 {
-  font-size: 0.9rem;
+.completion-badge {
+  font-size: 2.8rem;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+
+.completion-eyebrow {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
   color: var(--color-success);
   margin: 0;
 }
 
 .completion-title {
-  font-size: 1rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
   display: block;
 }
 
 .completion-stats {
   display: flex;
-  gap: 12px;
-  font-size: 0.8rem;
+  gap: 6px;
+  font-size: 0.78rem;
   color: var(--color-text-secondary);
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.completion-details {
+.completion-stats span {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  padding: 3px 10px;
+  border-radius: 100px;
+}
+
+.completion-actions {
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  font-size: 0.8rem;
-  color: var(--color-text-secondary);
-}
-
-.completion-link {
-  color: var(--color-accent);
-  font-size: 0.85rem;
-  font-weight: 600;
+  gap: 8px;
+  margin-top: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .completion-portfolio-btn {
-  align-self: flex-start;
-  padding: 6px 12px;
-  font-size: 0.8rem;
+  padding: 10px 16px;
+  font-size: 0.9rem;
+}
+
+.completion-next-btn {
+  padding: 10px 16px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  font: inherit;
+  border: none;
+  border-radius: var(--radius);
+  background: var(--color-success);
+  color: #fff;
+  cursor: pointer;
+}
+
+.completion-next-btn:hover { opacity: 0.9; }
+
+.completion-next-btn:focus-visible {
+  outline: 2px solid var(--color-success);
+  outline-offset: 2px;
 }
 
 /* ── Work cards (Portfolio) ────────────────────────────────────────────── */
@@ -1127,6 +1237,212 @@ hr {
 .work-detail-course {
   color: var(--color-text-secondary);
   font-size: 0.75rem;
+}
+
+/* ── Onboarding ─────────────────────────────────────────────────────────── */
+.onboarding {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--space) * 1.25);
+  padding: calc(var(--space) * 2) var(--space) var(--space);
+}
+
+.onboarding-step-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+
+.onboarding h2 {
+  font-size: 1.65rem;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.onboarding-lead {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+}
+
+.onboarding p {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.onboarding input[type="text"],
+.onboarding input[type="password"] {
+  font: inherit;
+  font-size: 1rem;
+  padding: 10px 12px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius);
+  width: 100%;
+  background: var(--color-surface);
+}
+
+.onboarding input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+  background: var(--color-bg);
+}
+
+/* Data consent step — sharing breakdown */
+.onboarding-share-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--color-surface);
+  border-radius: var(--radius);
+  padding: 12px 14px;
+}
+
+.onboarding-share-group { display: flex; flex-direction: column; gap: 4px; }
+
+.onboarding-share-heading {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-text-secondary);
+  margin-bottom: 2px;
+}
+
+.onboarding-share-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.onboarding-share-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: var(--color-text);
+}
+
+.share-yes::before {
+  content: "✓";
+  font-weight: 800;
+  color: var(--color-success);
+  flex-shrink: 0;
+}
+
+.share-no::before {
+  content: "✕";
+  font-weight: 700;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+/* Dots hidden visually — replaced by step label text */
+.onboarding-dots { display: none; }
+
+.onboarding-hint {
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+}
+
+.onboarding-privacy-link {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--color-accent);
+  padding: 8px 0;
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.consent-accept-btn,
+.consent-decline-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border-radius: var(--radius);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.consent-accept-btn {
+  background: transparent;
+  border: 2px solid var(--color-success);
+  color: var(--color-success);
+}
+
+.consent-accept-btn:hover { background: #f0fdf4; }
+
+.consent-accept-btn:focus-visible {
+  outline: 2px solid var(--color-success);
+  outline-offset: 2px;
+}
+
+.consent-decline-btn {
+  background: transparent;
+  border: 2px solid #dc2626;
+  color: #dc2626;
+}
+
+.consent-decline-btn:hover { background: #fef2f2; }
+
+.consent-decline-btn:focus-visible {
+  outline: 2px solid #dc2626;
+  outline-offset: 2px;
+}
+
+.onboarding-error {
+  font-size: 0.85rem;
+  color: var(--color-warning);
+  min-height: 1.3em;
+}
+
+/* ── Diagnostic choice ──────────────────────────────────────────────────── */
+.diagnostic-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.option-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  padding: var(--space);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.option-card:hover {
+  border-color: var(--color-primary);
+  background: var(--color-surface);
+}
+
+.option-card:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.option-card strong { font-size: 0.95rem; }
+
+.option-card p {
+  color: var(--color-text-secondary);
+  font-size: 0.8rem;
+  margin: 0;
 }
 
 @media (forced-colors: active) {

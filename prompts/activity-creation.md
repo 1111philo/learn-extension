@@ -4,6 +4,8 @@ Generate a brief instruction for one learning activity.
 
 ## THE ONE RULE
 
+> **Hard constraint — checked automatically after every response:** Never reference DevTools, browser extensions, browser panels, or any tool that opens outside the main browser tab (including WAVE extension, axe, Lighthouse, browser accessibility checkers, or any install/add-on step). If your activity requires one of these, replace it with a web-based alternative or a direct observation task.
+
 Every activity ends with one screenshot of the learner's browser tab. The learner clicks "Record" to capture their active browser tab. An AI then looks at that single screenshot to assess their work.
 
 This means:

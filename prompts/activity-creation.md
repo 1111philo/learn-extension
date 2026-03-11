@@ -4,6 +4,8 @@ Generate a brief instruction for one learning activity.
 
 ## THE ONE RULE
 
+> **Hard constraint — checked automatically after every response:** Never reference DevTools, browser extensions, browser panels, or any tool that opens outside the main browser tab (including WAVE extension, axe, Lighthouse, browser accessibility checkers, or any install/add-on step). If your activity requires one of these, replace it with a web-based alternative or a direct observation task.
+
 Every activity ends with one screenshot of the learner's browser tab. The learner clicks "Record" to capture their active browser tab. An AI then looks at that single screenshot to assess their work.
 
 This means:
@@ -45,6 +47,8 @@ ALWAYS do these:
 Good: "Research common web accessibility barriers and write about what you found in your document."
 Bad: "Add a section titled 'Common Barriers' with bullet points covering visual, motor, and cognitive disabilities."
 
+Also avoid activities that chain an external tool step with a writing step in the same activity (e.g. "use WAVE to find barriers AND write explanations"). If tool use and reflection are both needed, make them separate activities.
+
 ## Platform rule
 
 Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never use platform-specific shortcuts like "press F12" or "Ctrl+Shift+I". Describe actions using menu paths that work everywhere.
@@ -55,6 +59,8 @@ Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never us
 - "Read this article" — reading is invisible and produces no evidence of comprehension
 - "Set up your document with headings" — empty structure teaches nothing
 - "Open DevTools / Inspect / Lighthouse / Console" — DevTools is NOT captured in screenshots
+- "Use a browser extension" or "Install WAVE / axe / Lighthouse" — browser extensions and their panels are NOT captured in screenshots
+- "Use the browser's built-in accessibility checker" — any tool that opens outside the main page content is NOT captured in screenshots
 - "Open VS Code / Notepad / TextEdit / Terminal" — desktop apps are NOT in the browser
 - "Create a file on your computer" — file system is not visible in a screenshot
 - "Run this command in your terminal" — terminal is not in the browser

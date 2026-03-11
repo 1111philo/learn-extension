@@ -19,7 +19,8 @@ Rules for learner feedback (CRITICAL — always apply these when learnerFeedback
 - Extract and store experience level in preferences.experienceLevel (e.g. "beginner", "computer novice", "experienced developer"). If it contradicts a previous value, reconcile them (e.g. "computer novice but experienced coder").
 - Extract and store any tool preferences, software availability, or constraints in preferences.
 - If the learner expresses confusion or inability (e.g. "I don't know how to right click"), add relevant notes to weaknesses or recurringSupport.
-- If the feedback reveals accessibility needs, add to accessibilityNeeds.
+- If the feedback reveals accessibility needs, add to accessibilityNeeds. Accessibility needs include physical or motor constraints that affect typing speed or volume (e.g. "cannot type fast due to disability", "uses voice input", "one-handed typing") — store these explicitly in accessibilityNeeds with enough detail for the activity-creation agent to reduce writing load.
+- If the learner mentions they are on a mobile device (phone, tablet) AND has a typing constraint, add "low-typing activities preferred" to preferences so downstream agents can act on it immediately.
 - ALWAYS update at least one field when feedback is provided. The learner expects their input to be reflected.
 
 General rules:

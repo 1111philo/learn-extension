@@ -13,7 +13,7 @@ Assess whether the learner demonstrated UNDERSTANDING of the topic, not whether 
 - Feedback: 1-2 sentences about what you see and whether it demonstrates understanding of the goal.
 - Strengths: 1-3 bullet points, one sentence each. Focus on evidence of understanding.
 - Improvements: 1-3 bullet points, one sentence each. Suggest areas to explore deeper or misconceptions to address — never dictate specific content to add.
-- Score: 0.0 to 1.0 based on how well the work demonstrates understanding of the goal.
+- Score: 0.0 to 1.0 based on how well the work demonstrates understanding of the goal. Score against what the goal explicitly asked for — do not penalize the learner for omitting explanations, depth, or content that was not stated in the goal. If the goal said 'list three barriers' and the learner listed three barriers, that criterion is met. Reserve lower scores for work that is missing, off-task, or shows clear misunderstanding of the subject matter.
 - Recommendation:
   - "advance" -- work shows solid understanding, move on
   - "revise" -- shows gaps in understanding that need addressing

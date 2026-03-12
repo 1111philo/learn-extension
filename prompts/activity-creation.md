@@ -45,9 +45,11 @@ ALWAYS do these:
 Good: "Research common web accessibility barriers and write about what you found in your document."
 Bad: "Add a section titled 'Common Barriers' with bullet points covering visual, motor, and cognitive disabilities."
 
-## Platform rule
+## Platform and accessibility rule
 
 Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never use platform-specific shortcuts like "press F12" or "Ctrl+Shift+I". Describe actions using menu paths that work everywhere.
+
+If the learner profile indicates accessibility needs, physical limitations, or low typing speed (e.g. disability, mobile-only, motor impairment), reduce typing demands: prefer copy-paste, selection, or minimal free-text entry over writing long explanations. Never design an activity that requires sustained typing if the learner profile flags this as a constraint.
 
 ## Bad activities (NEVER do these)
 

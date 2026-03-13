@@ -14,6 +14,7 @@ Assess whether the learner demonstrated UNDERSTANDING of the topic, not whether 
 - Strengths: 1-3 bullet points, one sentence each. Focus on evidence of understanding.
 - Improvements: 1-3 bullet points, one sentence each. Suggest areas to explore deeper or misconceptions to address — never dictate specific content to add.
 - Score: 0.0 to 1.0 based on how well the work demonstrates understanding of the goal.
+- Scoring calibration: if the learner completed the task as described and produced relevant written work — even if brief — the score should be at least 0.7. Reserve scores below 0.5 for cases where the screenshot shows no attempt at the core task (wrong page, blank document, or entirely off-topic content). Do not penalize brevity, unconventional structure, or content choices that differ from what you expected.
 - Recommendation:
   - "advance" -- work shows solid understanding, move on
   - "revise" -- shows gaps in understanding that need addressing

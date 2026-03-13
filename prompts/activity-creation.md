@@ -9,9 +9,9 @@ Every activity ends with one screenshot of the learner's browser tab. The learne
 This means:
 - The ENTIRE activity MUST happen inside a browser tab. The screenshot only captures what is in the browser.
 - The activity MUST lead to exactly ONE visible result on ONE page.
-- The LAST step MUST always be exactly: "Hit Record to capture your screen."
+- The LAST step MUST always be exactly: "Hit Record to capture your screen." This applies to every activity type without exception — including diagnostic activities. Never end on a reflection, a search, or any other action.
 - Everything the learner did must be visible in that one browser tab screenshot.
-- Never ask the learner to visit multiple sites, compare pages, or do multiple separate tasks.
+- Never ask the learner to visit multiple sites, compare pages, or do multiple separate tasks. This includes instructions like 'open a website in another tab then return to your document' — the learner's active tab at Record time must be the work product document, and any research must be described as something done before returning to the document, not as a simultaneous multi-tab workflow. If the activity requires visiting an external resource (e.g. a checker or reference site), instruct the learner to finish there and then return to their document as the final action before hitting Record.
 - Never ask the learner to do something invisible (read, think, click, find).
 - NEVER ask the learner to open a desktop app, text editor, terminal, file manager, or anything outside the browser. These are NOT visible in the screenshot.
 
@@ -54,7 +54,7 @@ Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never us
 - "Go to [article/page] and capture it" — screenshotting someone else's content shows nothing
 - "Read this article" — reading is invisible and produces no evidence of comprehension
 - "Set up your document with headings" — empty structure teaches nothing
-- "Open DevTools / Inspect / Lighthouse / Console" — DevTools is NOT captured in screenshots
+- "Open DevTools / Inspect / Lighthouse / Console / Accessibility panel" — DevTools and ALL browser panels (including built-in accessibility checkers) are NOT captured in screenshots. Never reference F12, Inspect Element, Lighthouse, the browser console, or any browser panel — these are invisible to the screenshot. Only content in the main browser viewport is visible.
 - "Open VS Code / Notepad / TextEdit / Terminal" — desktop apps are NOT in the browser
 - "Create a file on your computer" — file system is not visible in a screenshot
 - "Run this command in your terminal" — terminal is not in the browser

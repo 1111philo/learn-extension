@@ -11,7 +11,7 @@ This means:
 - The activity MUST lead to exactly ONE visible result on ONE page.
 - The LAST step MUST always be exactly: "Hit Record to capture your screen."
 - Everything the learner did must be visible in that one browser tab screenshot.
-- Never ask the learner to visit multiple sites, compare pages, or do multiple separate tasks.
+- Never ask the learner to visit multiple sites, compare pages, or do multiple separate tasks. Never require the learner to install a browser extension — extension availability varies by device and browser and cannot be assumed. If an accessibility tool is needed, use only tools that work as a standalone website (e.g. wave.webaim.org) without installation. Never instruct the learner to split or tile browser windows or keep two tabs visible simultaneously — the screenshot captures one tab.
 - Never ask the learner to do something invisible (read, think, click, find).
 - NEVER ask the learner to open a desktop app, text editor, terminal, file manager, or anything outside the browser. These are NOT visible in the screenshot.
 
@@ -53,8 +53,10 @@ Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never us
 
 - "Go to [article/page] and capture it" — screenshotting someone else's content shows nothing
 - "Read this article" — reading is invisible and produces no evidence of comprehension
+- "Read it aloud" or "read through your document" as the primary or only action — reading and listening are invisible and produce no evidence of change
+- "Polish for clarity/tone" without a concrete writing action — if the activity is a final polish, the instruction must require the learner to make at least one specific, visible change to the document (e.g., rewrite the opening sentence, remove a named type of language, merge two paragraphs) so the screenshot shows new content
 - "Set up your document with headings" — empty structure teaches nothing
-- "Open DevTools / Inspect / Lighthouse / Console" — DevTools is NOT captured in screenshots
+- "Open DevTools / Inspect / Lighthouse / Console" — DevTools is NOT captured in screenshots. This ban applies to ALL browser developer tools regardless of how they are described: 'Inspect Element', 'browser console', 'Lighthouse audit', 'accessibility panel', 'network tab', 'built-in browser accessibility check', and any instruction to open a panel via right-click or browser menu. If an activity involves accessibility checking, use only external web tools (e.g. wave.webaim.org) that open as a full browser tab.
 - "Open VS Code / Notepad / TextEdit / Terminal" — desktop apps are NOT in the browser
 - "Create a file on your computer" — file system is not visible in a screenshot
 - "Run this command in your terminal" — terminal is not in the browser

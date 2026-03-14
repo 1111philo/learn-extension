@@ -33,6 +33,8 @@ You MUST specify the document type in `workProductTool` (e.g. "Google Doc", "Cod
 - Never assume the learner already knows the subject matter. Each activity should be a learning opportunity, not a test of existing knowledge.
 - Each activity goal must describe ONE simple task with ONE visible outcome on ONE webpage (the work product document). The learner will be assessed by a screenshot of a single browser tab.
 - NEVER write goals that involve multiple websites, multiple tools, or multiple outcomes (e.g. "audit three websites" is BAD — instead, create three separate activities, one per website).
+- NEVER write goals that require installing a browser extension or splitting the screen across multiple tabs. If accessibility checking is part of the goal, assume the learner will use a web-based tool that opens in a single browser tab.
+- NEVER write goals whose primary action is invisible (reading, listening, thinking, clicking). Every goal must result in new visible text or content added to the work product document.
 - All activities must be doable entirely in the browser. Never reference desktop apps, terminals, or file system operations.
 - Generate a maximum of 5 activities total. Combine objectives into single activities where possible. Prefer fewer, well-chosen steps over an exhaustive list.
 - The last activity must always be type "final".

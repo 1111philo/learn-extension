@@ -157,7 +157,7 @@ let state = {
   // Diagnostic flow
   diagnosticPhase: 'choice',      // 'choice' | 'activity' | 'result'
   diagnosticActivity: null,       // generated diagnostic activity object
-  diagnosticScreenshot: null,     // { dataUrl, pageUrl } — kept for appeal reassessment
+  diagnosticResponse: null,       // string — learner's text response, kept for appeal reassessment
   pendingDiagnosticResult: null,  // { courseId, result } — persists for plan generation
   skipDiagnosticFor: null         // courseId — bypass diagnostic
 };
@@ -1300,13 +1300,18 @@ async function renderDiagnosticChoice() {
         ${instructionMessage(activity.instruction)}
         ${activity.tips?.length ? `<div class="msg msg-app" style="font-size: 0.8rem; color: var(--color-text-secondary);">${activity.tips.map(t => `<p>${esc(t)}</p>`).join('')}</div>` : ''}
       </div>
+      <label for="diagnostic-response" class="sr-only">Your response</label>
+      <textarea id="diagnostic-response" class="feedback-textarea" rows="6" placeholder="Type your response here... (⌘/Ctrl+Enter to submit)" style="margin-top: var(--space); resize: vertical;"></textarea>
       <div class="action-bar">
         <button id="diag-feedback-btn" class="secondary-btn" aria-label="Give feedback on this activity">Add Feedback</button>
-        <button id="record-diagnostic-btn" class="record-btn">&#9679; Record</button>
+        <button id="submit-diagnostic-btn" class="primary-btn">Submit</button>
       </div>`;
 
     $('#diag-back-btn').addEventListener('click', () => navigate('courses'));
-    $('#record-diagnostic-btn').addEventListener('click', () => recordDiagnosticDraft(course, activity));
+    $('#diagnostic-response').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) { e.preventDefault(); submitDiagnosticResponse(course, activity); }
+    });
+    $('#submit-diagnostic-btn').addEventListener('click', () => submitDiagnosticResponse(course, activity));
     $('#diag-feedback-btn').addEventListener('click', () => showDiagnosticFeedback(course, activity));
 
   } else if (state.diagnosticPhase === 'result') {
@@ -1452,52 +1457,25 @@ async function regenerateDiagnosticActivity(course, activity) {
   }
 }
 
-async function recordDiagnosticDraft(course, activity) {
+async function submitDiagnosticResponse(course, activity) {
+  const responseText = $('#diagnostic-response')?.value?.trim();
+  if (!responseText) {
+    showError('Please write a response before submitting.');
+    return;
+  }
+
   const main = $main();
-
-  let dataUrl = null;
-  let pageUrl = '';
-  try {
-    const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
-    if (!tab?.url || /^(chrome|edge|brave|about):/.test(tab.url)) {
-      showError('Cannot capture this page. Navigate to a regular webpage and try again.');
-      return;
-    }
-    pageUrl = tab.url;
-
-    const hasAccess = await chrome.permissions.contains({ origins: ['<all_urls>'] });
-    if (!hasAccess) {
-      const granted = await chrome.permissions.request({ origins: ['<all_urls>'] });
-      if (!granted) {
-        showError('Screenshot permission was denied. Please allow access and try again.');
-        return;
-      }
-    }
-
-    const resp = await chrome.runtime.sendMessage({ type: 'captureScreenshot' });
-    if (resp?.error) throw new Error(resp.error);
-    dataUrl = resp?.dataUrl || null;
-  } catch (e) {
-    showError(`Screenshot capture failed: ${e.message}`);
-    return;
-  }
-
-  if (!dataUrl) {
-    showError('Could not capture a screenshot. Make sure a webpage is open and try again.');
-    return;
-  }
-
   main.innerHTML = `
     <div class="loading-container" role="status" aria-live="polite">
       <div class="loading-spinner" aria-hidden="true"></div>
       <p>Assessing your skills...</p>
     </div>`;
 
-  state.diagnosticScreenshot = { dataUrl, pageUrl };
+  state.diagnosticResponse = responseText;
 
   try {
     const profileSummary = await getLearnerProfileSummary();
-    const result = await orchestrator.assessDraft(course, activity, dataUrl, pageUrl, [], profileSummary, 'diagnostic-assessment');
+    const result = await orchestrator.assessTextResponse(course, activity, responseText, profileSummary);
     state.pendingDiagnosticResult = { courseId: course.courseId, result };
     state.diagnosticPhase = 'result';
     trackEvent('diagnostic_assessed', {
@@ -1546,12 +1524,12 @@ async function submitDiagnosticAppeal(course) {
     </div>`;
 
   try {
-    const { dataUrl, pageUrl } = state.diagnosticScreenshot || {};
+    const learnerResponse = state.diagnosticResponse || '';
     const previousResult = state.pendingDiagnosticResult.result;
     const profileSummary = await getLearnerProfileSummary();
-    const result = await orchestrator.reassessDraft(
-      course, state.diagnosticActivity, dataUrl, pageUrl,
-      [], profileSummary, previousResult, feedbackText, 'diagnostic-assessment'
+    const result = await orchestrator.reassessTextResponse(
+      course, state.diagnosticActivity, learnerResponse,
+      profileSummary, previousResult, feedbackText
     );
     state.pendingDiagnosticResult = { courseId: course.courseId, result };
     trackEvent('diagnostic_appeal', {

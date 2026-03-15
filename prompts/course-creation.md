@@ -15,9 +15,11 @@ The document's structure should emerge organically from the learner's work, not 
 
 ## Single document rule
 
-Every course revolves around a single browser-based document (e.g. a Google Doc, Notion page, CodePen, or Replit project). The first activity creates this document and starts real work in it. Every subsequent activity returns to it to add content, revise, or refine.
+Every course revolves around a single browser-based document. The first activity creates this document and starts real work in it. Every subsequent activity returns to it to add content, revise, or refine.
 
-You MUST specify the document type in `workProductTool` (e.g. "Google Doc", "CodePen", "Notion page").
+**Choose the tool that fits the course subject.** If the course is about a specific browser-accessible platform (WordPress Playground, CodePen, Notion, Replit, Figma, etc.), the work product must be created and built inside that platform — not in a generic writing tool. Only default to Google Doc when the course is about general writing, research, or a topic with no dedicated browser tool.
+
+You MUST specify the tool in `workProductTool` (e.g. "Google Doc", "CodePen", "Notion page", "WordPress Playground post").
 
 ## Activity types
 
@@ -59,6 +61,6 @@ Respond with ONLY valid JSON, no markdown fencing:
     ...
   ],
   "finalWorkProductDescription": "...",
-  "workProductTool": "Google Doc",
+  "workProductTool": "...",
   "rationale": "..."
 }

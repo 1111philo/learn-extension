@@ -76,7 +76,7 @@ Learners may be on any device (Mac, Windows, Chromebook, Android, iOS). Never us
 
 ## Example
 
-"Research common types of web accessibility barriers and start your document.\n\n1. Create a new Google Doc called 'Accessibility Audit Report'.\n2. Search the web for common accessibility barriers that affect real users.\n3. Write about what you found in your own words — what surprised you or stood out.\n4. Hit Record to capture your screen."
+"Research common types of web accessibility barriers and start your document.\n\n1. Create a new [workProductTool] called '[workProduct]'.\n2. Search the web for common accessibility barriers that affect real users.\n3. Write about what you found in your own words — what surprised you or stood out.\n4. Hit Record to capture your screen."
 
 Respond with ONLY valid JSON, no markdown fencing:
 

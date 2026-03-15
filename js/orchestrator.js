@@ -60,6 +60,14 @@ function validateSafety(text) {
   return null;
 }
 
+function validateDiagnosticActivity(parsed) {
+  if (!parsed.instruction || typeof parsed.instruction !== 'string') return 'Missing instruction.';
+  if (!Array.isArray(parsed.tips)) return 'Missing tips array.';
+  const safety = validateSafety(parsed.instruction + ' ' + parsed.tips.join(' '));
+  if (safety) return safety;
+  return null;
+}
+
 function validateActivity(parsed) {
   if (!parsed.instruction || typeof parsed.instruction !== 'string') return 'Missing instruction.';
   if (!Array.isArray(parsed.tips)) return 'Missing tips array.';
@@ -190,7 +198,7 @@ export async function generateDiagnosticActivity(course) {
     return parseJSON(content);
   };
 
-  const generated = await callWithValidation(callAgent, validateActivity, 'diagnostic-creation');
+  const generated = await callWithValidation(callAgent, validateDiagnosticActivity, 'diagnostic-creation');
   return {
     id: `diagnostic-${course.courseId}`,
     type: 'final',
@@ -415,6 +423,84 @@ export async function reassessDraft(course, activity, screenshotDataUrl, pageUrl
     const { content } = await callClaude({
       apiKey,
       model: MODEL_HEAVY,
+      systemPrompt,
+      messages,
+      maxTokens: 1024
+    });
+    return parseJSON(content);
+  };
+
+  return callWithValidation(callAgent, validateAssessment, 'assessment-reassess');
+}
+
+/**
+ * Assess a diagnostic skills check from a short text response (no screenshot).
+ */
+export async function assessTextResponse(course, activity, learnerResponse, profileSummary, promptName = 'diagnostic-assessment') {
+  const apiKey = await requireKey();
+  const systemPrompt = await loadPrompt(promptName);
+
+  const contentParts = [{
+    type: 'text',
+    text: JSON.stringify({
+      course: { name: course.name, learningObjectives: course.learningObjectives },
+      activity: {
+        id: activity.id,
+        type: activity.type,
+        goal: activity.goal,
+        instruction: activity.instruction
+      },
+      learnerResponse,
+      learnerProfile: profileSummary || 'No profile yet'
+    })
+  }];
+
+  const callAgent = async () => {
+    const { content } = await callClaude({
+      apiKey,
+      model: MODEL_LIGHT,
+      systemPrompt,
+      messages: [{ role: 'user', content: contentParts }],
+      maxTokens: 1024
+    });
+    return parseJSON(content);
+  };
+
+  return callWithValidation(callAgent, validateAssessment, 'diagnostic-assessment');
+}
+
+/**
+ * Reassess a diagnostic text response with learner feedback on the assessment.
+ */
+export async function reassessTextResponse(course, activity, learnerResponse, profileSummary, previousAssessment, learnerFeedback, promptName = 'diagnostic-assessment') {
+  const apiKey = await requireKey();
+  const systemPrompt = await loadPrompt(promptName);
+
+  const contentParts = [{
+    type: 'text',
+    text: JSON.stringify({
+      course: { name: course.name, learningObjectives: course.learningObjectives },
+      activity: {
+        id: activity.id,
+        type: activity.type,
+        goal: activity.goal,
+        instruction: activity.instruction
+      },
+      learnerResponse,
+      learnerProfile: profileSummary || 'No profile yet'
+    })
+  }];
+
+  const messages = [
+    { role: 'user', content: contentParts },
+    { role: 'assistant', content: JSON.stringify(previousAssessment) },
+    { role: 'user', content: `The learner disputes this assessment: "${learnerFeedback}"\n\nRe-evaluate the same response, taking their feedback into account. You may adjust your score, recommendation, and feedback if their point is valid. Respond with the same JSON format.` }
+  ];
+
+  const callAgent = async () => {
+    const { content } = await callClaude({
+      apiKey,
+      model: MODEL_LIGHT,
       systemPrompt,
       messages,
       maxTokens: 1024

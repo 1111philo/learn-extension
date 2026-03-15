@@ -1,9 +1,22 @@
 [
   {
+    "courseId": "foundations-0-wordpress",
+    "name": "Foundations 0: WordPress",
+    "description": "Get started with WordPress using WordPress Playground. Learn what WordPress is, why its freedoms matter, how it has changed over time, and what you found by exploring WordPress Playground, based on your skill level.",
+    "dependsOn": null,
+    "learningObjectives": [
+      "Can launch a WordPress Playground (https://playground.wordpress.net/) instance, navigate it and publish a first post.",
+      "Can explain the four freedoms of WordPress and why they matter",
+      "Can describe key moments in the history of WordPress",
+      "Can recognize WordPress Playground as a space for learning, testing, and experimentation",
+      "Can explain one surprising or delightful thing discovered in WordPress Playground"
+    ]
+  },
+  {
     "courseId": "foundations-1-identity",
     "name": "Foundations 1: Identity",
     "description": "Create a polished written statement of purpose that clearly communicates your professional motivation, direction, and value.",
-    "dependsOn": null,
+    "dependsOn": "foundations-0-wordpress",
     "learningObjectives": [
       "Can clarify the professional interests, values, and strengths that shape your sense of purpose",
       "Can recognize how audience and context affect the way purpose is communicated",

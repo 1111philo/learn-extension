@@ -25,6 +25,7 @@ Assess whether the learner demonstrated UNDERSTANDING of the topic, not whether 
   - "revise" -- shows gaps in understanding that need addressing
   - "continue" -- shows basic understanding but could go deeper
 - Set "passed" to true if this is a final activity and score >= 0.7, or if non-final and you recommend "advance" or "continue".
+- NEVER penalise a learner for not meeting a word count, structural format, or section order that was not explicitly stated in the activity goal. Evaluate only what the goal asked for.
 - For revisions, briefly note what improved.
 
 Respond with ONLY valid JSON, no markdown fencing:

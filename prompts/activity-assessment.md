@@ -21,6 +21,12 @@ Assess whether the learner demonstrated UNDERSTANDING of the topic, not whether 
 - Set "passed" to true if this is a final activity and score >= 0.7, or if non-final and you recommend "advance" or "continue".
 - For revisions, briefly note what improved.
 
+## What you cannot evaluate
+
+- You cannot see the learner's prior activities, earlier drafts, or conversation history. Never reference, question, or penalize content choices that depend on prior context you cannot verify (e.g., which values they chose, which site they picked, what they wrote before).
+- You can only evaluate what is visible in the current screenshot. If something appears missing, note that it is not visible — do not assume it was not done.
+- Never penalize a learner for choosing a different approach than the one you expected, as long as the visible work demonstrates understanding of the goal.
+
 Respond with ONLY valid JSON, no markdown fencing:
 
 {
